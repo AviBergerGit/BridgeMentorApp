@@ -4,7 +4,7 @@ import './mentor.css';
 /* ============ BRIDGE-MENTOR - prototype v1.1.0 ============ */
 
 const EMAIL = "bridgetrainergame@gmail.com";
-const VERSION = "1.1.12";
+const VERSION = "1.1.13";
 
 const QUESTIONS = [
   { id:"s2b1", topic:"t1", wrong:["2♣", "1NT", "3NT"], dealer:"מערב", vul:"מזרח-מערב", ctx:"אתה מזרח (המשיב לפותח). השותף (מערב) פתח, צפון התערב.",
@@ -174,6 +174,181 @@ const QUESTIONS = [
     hand:{s:"AJ87",h:"Q852",d:"764",c:"K2"}, hcp:10,
     auction:[["דרום","1♣"],["מערב","1NT"]],
     answer:"X", expl:"אחרי שהיריב מתערב ב-1NT בפתיחת השותף, כפל הוא מעניש ומראה 10+ נקודות. ביד זו יש 10 נקודות. זה אינו כפל נגטיבי שמראה את סדרות המייג'ור." },
+  { id:"s2b7", topic:"t1", wrong:["X", "2♦", "Pass"],
+    ctx:"אתה דרום (המשיב לפותח). השותף (צפון) פתח, מזרח התערב.",
+    hand:{s:"T8732",h:"A2",d:"K3",c:"K932"}, hcp:10,
+    auction:[["צפון","1♦"],["מזרח","1♥"]],
+    answer:"1♠", expl:"סדרה חדשה בגובה 1 אחרי התערבות 1♥: 5+ קלפים בסדרה ו-6+ נקודות. עם רביעייה בלבד מכריזים X." },
+  { id:"s2b8", topic:"t1", wrong:["1♠", "2♣", "Pass"],
+    ctx:"אתה דרום (המשיב לפותח). השותף (צפון) פתח, מזרח התערב.",
+    hand:{s:"K872",h:"53",d:"87",c:"A8642"}, hcp:7,
+    auction:[["צפון","1♦"],["מזרח","1♥"]],
+    answer:"X", expl:"כפל נגטיבי: רביעייה בסדרת ה-♠ ו-6+ נקודות. עם חמישייה היינו מכריזים 1♠." },
+  { id:"s2b9", topic:"t1", wrong:["3♦", "X", "2NT"],
+    ctx:"אתה דרום (המשיב לפותח). השותף (צפון) פתח, מזרח התערב.",
+    hand:{s:"A73",h:"82",d:"AJ832",c:"A64"}, hcp:13,
+    auction:[["צפון","1♦"],["מזרח","1♥"]],
+    answer:"2♥", expl:"קיו-ביד: 10+ נקודות ותמיכה בסדרת הפותח. היד לא מתאימה לנגטיב X (אין מספיק קלפים ב-♠) ולא ל-NT (אין עוצר ב-♥)." },
+  { id:"s3b7", topic:"t4", wrong:["3♥", "XX", "Pass"],
+    ctx:"אתה מזרח (המשיב לפותח). השותף (מערב) פתח, צפון כפל (כפל הוצאה).",
+    hand:{s:"32",h:"K72",d:"A984",c:"J652"}, hcp:8,
+    auction:[["מערב","1♥"],["צפון","X"]],
+    answer:"2♥", expl:"תמיכה בגובה 2 אחרי הכפל: 6-9 נקודות עם 3+ קלפי תמיכה." },
+  { id:"s3b8", topic:"t4", wrong:["2♥", "XX", "Pass"],
+    ctx:"אתה מזרח (המשיב לפותח). השותף (מערב) פתח, צפון כפל (כפל הוצאה).",
+    hand:{s:"2",h:"J985",d:"K942",c:"8432"}, hcp:4,
+    auction:[["מערב","1♥"],["צפון","X"]],
+    answer:"3♥", expl:"תמיכה בקפיצה אחרי הכפל: 0-5 נקודות עם 4+ קלפי תמיכה - הכרזת הפרעה." },
+  { id:"s3b9", topic:"t3", wrong:["2♦", "1NT", "Pass"],
+    ctx:"אתה מזרח (המשיב לפותח). השותף (מערב) פתח, צפון כפל (כפל הוצאה).",
+    hand:{s:"A6",h:"72",d:"KQJ32",c:"J982"}, hcp:11,
+    auction:[["מערב","1♥"],["צפון","X"]],
+    answer:"XX", expl:"רידאבל: 10+ נקודות; בלי תמיכה מספקת ובלי סדרה חדשה של 6+ קלפים." },
+  { id:"s3b10", topic:"t3", wrong:["2♥", "1NT", "Pass"],
+    ctx:"אתה מזרח (המשיב לפותח). השותף (מערב) פתח, צפון כפל (כפל הוצאה).",
+    hand:{s:"32",h:"KQ82",d:"AT5",c:"QT53"}, hcp:11,
+    auction:[["מערב","1♠"],["צפון","X"]],
+    answer:"XX", expl:"רידאבל: 10+ נקודות; מכין עונש או משחק מלא." },
+  { id:"s3b11", topic:"t4", wrong:["3♥", "XX", "Pass"],
+    ctx:"אתה מזרח (המשיב לפותח). השותף (מערב) פתח, צפון כפל (כפל הוצאה).",
+    hand:{s:"2",h:"KJ8752",d:"42",c:"QT82"}, hcp:6,
+    auction:[["מערב","1♠"],["צפון","X"]],
+    answer:"2♥", expl:"סדרה חדשה בגובה 2 אחרי הכפל (ללא קפיצה): 6-9 נקודות ו-6+ קלפים בסדרה." },
+  { id:"s4b9", topic:"t1", wrong:["X", "2♣", "Pass"],
+    ctx:"השותף פתח 1♦ והיריב התערב 1♥. מה תכריז?",
+    hand:{s:"QJ532",h:"A9",d:"64",c:"QT92"}, hcp:9,
+    auction:[["שותף","1♦"],["יריב","1♥"]],
+    answer:"1♠", expl:"סדרה חדשה בגובה 1: 5+ קלפים ו-6+ נקודות. עם רביעייה בלבד מכריזים נגטיב דאבל." },
+  { id:"s4b10", topic:"t2", wrong:["2♠", "2♥", "Pass"],
+    ctx:"השותף פתח 1♥ והיריב התערב 2♣. מה תכריז?",
+    hand:{s:"AQ765",h:"4",d:"Q852",c:"865"}, hcp:8,
+    auction:[["שותף","1♥"],["יריב","2♣"]],
+    answer:"X", expl:"נגטיב דאבל: בלי 11 נקודות להכרזת סדרה בגובה 2, הכפל מאפשר לתאר את סדרת המייג'ור." },
+  { id:"s4b11", topic:"t1", wrong:["X", "2♦", "Pass"],
+    ctx:"השותף פתח 1♣ והיריב התערב 1♠. מה תכריז?",
+    hand:{s:"6",h:"AJ843",d:"K632",c:"K42"}, hcp:11,
+    auction:[["שותף","1♣"],["יריב","1♠"]],
+    answer:"2♥", expl:"סדרה חדשה בגובה 2: 5+ קלפים ו-11+ נקודות. נגטיב דאבל מראה רק רביעייה." },
+  { id:"s4b12", topic:"t2", wrong:["2♠", "X", "Pass"],
+    ctx:"השותף פתח 1♠ והיריב התערב 2♦. מה תכריז?",
+    hand:{s:"T943",h:"643",d:"2",c:"K6532"}, hcp:3,
+    auction:[["שותף","1♠"],["יריב","2♦"]],
+    answer:"3♠", expl:"תמיכה בקפיצה: 0-5 נקודות עם 4 קלפים במייג'ור - הכרזת הפרעה." },
+  { id:"s4b13", topic:"t5", wrong:["Pass", "2♥", "3NT"], vul:"המתנגדים בלבד",
+    ctx:"השותף פתח 1♠ והיריב התערב 1NT. מה תכריז?",
+    hand:{s:"52",h:"AJ84",d:"QJ2",c:"QT94"}, hcp:10,
+    auction:[["שותף","1♠"],["יריב","1NT"]],
+    answer:"X", expl:"כפל מעניש. יש לנו יותר נקודות מהיריבים והמתנגד פגיע - הסיכוי להכשיל 1NT גבוה." },
+  { id:"s4b14", topic:"t5", wrong:["Pass", "3♥", "X"], vul:"המתנגדים בלבד",
+    ctx:"השותף פתח 1♥ והיריב התערב 1NT. מה תכריז?",
+    hand:{s:"2",h:"J32",d:"K9843",c:"Q543"}, hcp:6,
+    auction:[["שותף","1♥"],["יריב","1NT"]],
+    answer:"2♥", expl:"תמיכה בגובה 2: 6-9 נקודות עם 3+ קלפי תמיכה." },
+  { id:"s4b15", topic:"t5", wrong:["Pass", "3♠", "X"], vul:"המתנגדים בלבד",
+    ctx:"השותף פתח 1♦ והיריב התערב 1NT. מה תכריז?",
+    hand:{s:"KQT862",h:"2",d:"T432",c:"J2"}, hcp:6,
+    auction:[["שותף","1♦"],["יריב","1NT"]],
+    answer:"2♠", expl:"סדרה חדשה אחרי התערבות 1NT: טבעית, 6 קלפים בסדרה." },
+  { id:"s4b16", topic:"t5", wrong:["2♥", "X", "2♦"], vul:"המתנגדים בלבד",
+    ctx:"השותף פתח 1♦ והיריב התערב 1NT. מה תכריז?",
+    hand:{s:"J32",h:"KT965",d:"K54",c:"42"}, hcp:7,
+    auction:[["שותף","1♦"],["יריב","1NT"]],
+    answer:"Pass", expl:"התשובה הרשמית: Pass. סדרה בינונית ויד חלשה לא מצדיקים התערבות בגובה 2 מול 1NT." },
+  { id:"s4b17", topic:"t5", wrong:["Pass", "2♥", "3NT"], vul:"המתנגדים בלבד",
+    ctx:"השותף פתח 1♠ והיריב התערב 1NT. מה תכריז?",
+    hand:{s:"J42",h:"AJ52",d:"KT6",c:"T94"}, hcp:9,
+    auction:[["שותף","1♠"],["יריב","1NT"]],
+    answer:"X", expl:"כפל מעניש. יש לנו יותר נקודות מהיריבים והמתנגד פגיע - הסיכוי להכשיל 1NT גבוה." },
+  { id:"s4b18", topic:"t5", wrong:["2♥", "Pass", "X"], vul:"המתנגדים בלבד",
+    ctx:"השותף פתח 1♥ והיריב התערב 1NT. מה תכריז?",
+    hand:{s:"6",h:"J832",d:"QT943",c:"543"}, hcp:3,
+    auction:[["שותף","1♥"],["יריב","1NT"]],
+    answer:"3♥", expl:"תמיכה בקפיצה: 0-5 נקודות עם 4 קלפי תמיכה - הכרזת הפרעה." },
+  { id:"s4b19", topic:"t5", wrong:["Pass", "3♣", "X"], vul:"המתנגדים בלבד",
+    ctx:"השותף פתח 1♦ והיריב התערב 1NT. מה תכריז?",
+    hand:{s:"Q86",h:"2",d:"T42",c:"KQT542"}, hcp:7,
+    auction:[["שותף","1♦"],["יריב","1NT"]],
+    answer:"2♣", expl:"סדרה חדשה אחרי התערבות 1NT: טבעית, 6 קלפים, 6-9 נקודות." },
+  { id:"s4b20", topic:"t5", wrong:["2♥", "2♦", "X"], vul:"המתנגדים בלבד",
+    ctx:"השותף פתח 1♥ והיריב התערב 1NT. מה תכריז?",
+    hand:{s:"J64",h:"43",d:"K765",c:"Q432"}, hcp:6,
+    auction:[["שותף","1♥"],["יריב","1NT"]],
+    answer:"Pass", expl:"התשובה הרשמית: Pass. אין תמיכה, אין סדרה להכריז ואין מספיק נקודות לעונש." },
+  { id:"s4b21", topic:"t6", wrong:["XX", "2♦", "2♥"],
+    ctx:"היריב פתח 1♠, השותף התערב 1NT והיריב השני כפל. מה תכריז?",
+    hand:{s:"K543",h:"54",d:"JT84",c:"942"}, hcp:4,
+    auction:[["יריב","1♠"],["שותף","1NT"],["יריב","X"]],
+    answer:"Pass", expl:"מוכנים לשחק 1NT מוכפל; אין סדרה של 5+ קלפים לברוח אליה בטרנספר." },
+  { id:"s4b22", topic:"t6", wrong:["2♥", "XX", "Pass"],
+    ctx:"היריב פתח 1♠, השותף התערב 1NT והיריב השני כפל. מה תכריז?",
+    hand:{s:"65",h:"J9832",d:"J43",c:"763"}, hcp:2,
+    auction:[["יריב","1♠"],["שותף","1NT"],["יריב","X"]],
+    answer:"2♦", expl:"אחרי הכפל ההסכמים נשארים: 2♦ הוא טרנספר ל-♥ - בריחה עם חמישייה ויד חלשה." },
+  { id:"s4b23", topic:"t6", wrong:["Pass", "2♣", "2♦"],
+    ctx:"היריב פתח 1♥, השותף התערב 1NT והיריב השני כפל. מה תכריז?",
+    hand:{s:"T",h:"J84",d:"432",c:"J87654"}, hcp:2,
+    auction:[["יריב","1♥"],["שותף","1NT"],["יריב","X"]],
+    answer:"XX", expl:"XX הוא טרנספר ל-♣: בריחה לשישיית הקלאבים." },
+  { id:"s4b24", topic:"t6", wrong:["Pass", "XX", "2♦"],
+    ctx:"היריב פתח 1♥, השותף התערב 1NT והיריב השני כפל. מה תכריז?",
+    hand:{s:"654",h:"43",d:"Q6532",c:"972"}, hcp:2,
+    auction:[["יריב","1♥"],["שותף","1NT"],["יריב","X"]],
+    answer:"2♣", expl:"2♣ הוא טרנספר ל-♦: בריחה עם חמישייה ויד חלשה." },
+  { id:"s4b25", topic:"t6", wrong:["3♠", "Pass", "X"],
+    ctx:"היריב פתח 1♣, השותף התערב 1NT והיריב השני הכריז 2♥. מה תכריז?",
+    hand:{s:"QJ974",h:"2",d:"Q632",c:"432"}, hcp:5,
+    auction:[["יריב","1♣"],["שותף","1NT"],["יריב","2♥"]],
+    answer:"2♠", expl:"סדרה חדשה בגובה 2: חמישייה ויד חלשה - סיין-אוף." },
+  { id:"s4b26", topic:"t6", wrong:["3♠", "3NT", "2♠"],
+    ctx:"היריב פתח 1♣, השותף התערב 1NT והיריב השני הכריז 2♥. מה תכריז?",
+    hand:{s:"KQ65",h:"32",d:"KJ4",c:"QT63"}, hcp:11,
+    auction:[["יריב","1♣"],["שותף","1NT"],["יריב","2♥"]],
+    answer:"3♥", expl:"קיו-ביד בסדרת היריב: game forcing, שואל את השותף על רביעייה במייג'ור השני (9+ נקודות)." },
+  { id:"s4b27", topic:"t6", wrong:["2♠", "3♥", "3NT"],
+    ctx:"היריב פתח 1♣, השותף התערב 1NT והיריב השני הכריז 2♥. מה תכריז?",
+    hand:{s:"KQ432",h:"42",d:"A6",c:"Q873"}, hcp:11,
+    auction:[["יריב","1♣"],["שותף","1NT"],["יריב","2♥"]],
+    answer:"3♠", expl:"קפיצה בסדרה: 5+ קלפים ו-9+ נקודות, מחייבת למשחק מלא." },
+  { id:"s4b28", topic:"t6", wrong:["Pass", "2♠", "3NT"],
+    ctx:"היריב פתח 1♣, השותף התערב 1NT והיריב השני הכריז 2♥. מה תכריז?",
+    hand:{s:"T64",h:"KQ84",d:"A2",c:"T653"}, hcp:9,
+    auction:[["יריב","1♣"],["שותף","1NT"],["יריב","2♥"]],
+    answer:"X", expl:"כפל מעניש: 4+ קלפים בסדרת היריב ו-7+ נקודות - להפיל שווה יותר ממשחק חלקי." },
+  { id:"s6b6", topic:"t8", wrong:["Pass", "1NT", "X"], dealer:"צפון",
+    ctx:"אתה מערב. צפון פתח, מזרח ודרום עברו - אתה במושב הרביעי (בלנסינג).",
+    hand:{s:"A62",h:"KJ872",d:"2",c:"QT42"}, hcp:10,
+    auction:[["צפון","1♠"],["מזרח","Pass"],["דרום","Pass"]],
+    answer:"2♥", expl:"בלנסינג בסדרה בגובה 2: 9-14 נקודות ו-5+ קלפים." },
+  { id:"s6b7", topic:"t8", wrong:["Pass", "1NT", "2♦"], dealer:"צפון",
+    ctx:"אתה מערב. צפון פתח, מזרח ודרום עברו - אתה במושב הרביעי (בלנסינג).",
+    hand:{s:"K862",h:"83",d:"AQ87",c:"942"}, hcp:9,
+    auction:[["צפון","1♥"],["מזרח","Pass"],["דרום","Pass"]],
+    answer:"X", expl:"כפל הוצאה בבלנסינג: 9+ נקודות, 3+ קלפים בכל סדרה שלא הוכרזה, ללא חמישייה במייג'ור." },
+  { id:"s6b8", topic:"t8", wrong:["X", "Pass", "2♦"], dealer:"צפון",
+    ctx:"אתה מערב. צפון פתח, מזרח ודרום עברו - אתה במושב הרביעי (בלנסינג).",
+    hand:{s:"K862",h:"83",d:"AQ87",c:"KJ2"}, hcp:13,
+    auction:[["צפון","1♣"],["מזרח","Pass"],["דרום","Pass"]],
+    answer:"1NT", expl:"בלנסינג ב-1NT: 11-14 נקודות, יד מאוזנת עם עוצר בסדרת הפותח. לכפל הוצאה חסרים 3 קלפים ב-♥." },
+  { id:"s6b9", topic:"t8", wrong:["1♠", "Pass", "1NT"], dealer:"צפון",
+    ctx:"אתה מערב. צפון פתח, מזרח ודרום עברו - אתה במושב הרביעי (בלנסינג).",
+    hand:{s:"KQ962",h:"A83",d:"AQJ7",c:"9"}, hcp:16,
+    auction:[["צפון","1♥"],["מזרח","Pass"],["דרום","Pass"]],
+    answer:"X", expl:"ביג דאבל: 15+ נקודות במושב בלנסינג - חזק מדי להתערבות רגילה (6-14)." },
+  { id:"s6r5", topic:"t9", wrong:["Pass", "3♥", "X"], dealer:"צפון",
+    ctx:"אתה מערב. בסיבוב הראשון עברת, והיריבים עצרו ב-2♦.",
+    hand:{s:"2",h:"KJ9762",d:"87",c:"QJT2"}, hcp:7,
+    auction:[["צפון","1♦"],["מזרח","Pass"],["דרום","1♠"],["מערב","Pass"],["צפון","2♦"],["מזרח","Pass"],["דרום","Pass"]],
+    answer:"2♥", expl:"רה-אופנינג: בסיבוב הראשון 7 נקודות לא הספיקו להתערבות, אבל כשהיריבים עצרו בחוזה חלקי משלימים לנקודות צבורות ומתערבים." },
+  { id:"s6r6", topic:"t9", wrong:["Pass", "2♥", "2NT"], dealer:"צפון",
+    ctx:"אתה מערב. צפון פתח 1NT וכולם עברו - אתה במושב הרביעי.",
+    hand:{s:"2",h:"KQ9872",d:"987",c:"J42"}, hcp:6,
+    auction:[["צפון","1NT"],["מזרח","Pass"],["דרום","Pass"]],
+    answer:"X", expl:"כפל DONT על 1NT: יד חד-סדרתית. השותף משיב 2♣ ואתה מתקן לסדרה שלך." },
+  { id:"s6r7", topic:"t9", wrong:["Pass", "X", "3♠"], dealer:"צפון",
+    ctx:"אתה מערב. צפון פתח ב-2♥ חלש וכולם עברו - אתה במושב הרביעי.",
+    hand:{s:"AJT87",h:"2",d:"KT87",c:"Q42"}, hcp:10,
+    auction:[["צפון","2♥"],["מזרח","Pass"],["דרום","Pass"]],
+    answer:"2♠", expl:"אחרי פתיחה חלשה מתערבים לפי הכללים הרגילים: חמישייה טובה ו-10 נקודות מספיקים ל-2♠." },
 ];
 
 const TOPICS = [
@@ -237,7 +412,7 @@ const TOPICS = [
  },
  {
   "id": "t3",
-  "icon": "🔁",
+  "icon": "XX",
   "name": "רידאבל של המשיב אחרי כפל הוצאה",
   "summary": [
    [
@@ -264,7 +439,7 @@ const TOPICS = [
  },
  {
   "id": "t4",
-  "icon": "🧭",
+  "icon": "X",
   "name": "סדרה חדשה ותמיכה בקפיצה אחרי כפל הוצאה",
   "summary": [
    [
@@ -345,7 +520,7 @@ const TOPICS = [
  },
  {
   "id": "t7",
-  "icon": "🚧",
+  "icon": "3️⃣",
   "name": "ההכרזה החופשית אחרי התערבות בקפיצה (הכרזת מנע)",
   "summary": [
    [
@@ -656,10 +831,10 @@ export default function Mentor({ stats, setStats, users, current, selectUser }){
 
         {screen === "home" && (
           <>
-            <div className="header"><h1>🌉 BRIDGE-MENTOR</h1><div className="sub">המאמן האישי שלך לברידג' · שיטת SAYC</div></div>
+            <div className="header"><h1>♠♥♦♣ BRIDGE-MENTOR</h1><div className="sub">המאמן האישי שלך לברידג' · שיטת SAYC</div></div>
             <div className="content">
-              <button className="chip" onClick={() => setScreen("players")}>👤 {current} · החלפת שם</button>
-              <button className="bigbtn" onClick={() => { setGrp(null); setScreen("topics"); }}><span className="em">🎯</span><span>תרגול לפי נושא<small>נושאים ממוקדים ותקצירי תיאוריה</small></span></button>
+              <button className="chip" onClick={() => setScreen("players")}>✏️ {current} · החלפת שם</button>
+              <button className="bigbtn" onClick={() => { setGrp(null); setScreen("topics"); }}><span className="em">▶️</span><span>תרגול לפי נושא<small>נושאים ממוקדים ותקצירי תיאוריה</small></span></button>
               <button className="bigbtn" onClick={() => setScreen("stats")}><span className="em">📊</span><span>הסטטיסטיקה שלי<small>התקדמות לפי נושאים</small></span></button>
               <button className="bigbtn" onClick={() => setScreen("settings")}><span className="em">⚙️</span><span>הגדרות<small>גרסה ויצירת קשר</small></span></button>
             </div>
@@ -693,7 +868,7 @@ export default function Mentor({ stats, setStats, users, current, selectUser }){
             <div className="content">
               {groupOf(grp).topics.map(id => <TopicRow key={id} t={topicOf(id)}/>)}
               <div className="topicrow" onClick={() => startTopic(grp)}>
-                <span className="em">🎲</span>
+                <span className="em">🃏</span>
                 <span className="name">כל נושאי המכרז התחרותי, בסדר אקראי<small className="tsub">10 מתוך {qsOfGroup(groupOf(grp)).length} שאלות</small></span>
               </div>
             </div>
@@ -718,7 +893,7 @@ export default function Mentor({ stats, setStats, users, current, selectUser }){
               })}
               {TOPICS.filter(t => !groupedIds.includes(t.id)).map(t => <TopicRow key={t.id} t={t}/>)}
               <div className="topicrow" onClick={() => startTopic(null)}>
-                <span className="em">🎲</span>
+                <span className="em">🃏</span>
                 <span className="name">כל השאלות, בסדר אקראי<small className="tsub">10 מתוך {QUESTIONS.length} שאלות</small></span>
                 <span className="pct">{Math.round(100 * uniqueAnswered / QUESTIONS.length)}%</span>
               </div>
@@ -753,7 +928,7 @@ export default function Mentor({ stats, setStats, users, current, selectUser }){
           <>
             <div className="header"><div className="navbar"><span className="back" onClick={backList}>→</span><h1 className="tname">{curName}</h1><span className="counter">שאלה {pos + 1} מתוך {order.length}</span></div></div>
             <div className="content scroll">
-              <div className={fb.ok ? "banner-ok" : "banner-bad"}>{fb.ok ? "נכון! ✅" : "לא נכון ❌"}</div>
+              <div className={fb.ok ? "banner-ok" : "banner-bad"}>{fb.ok ? "נכון! ✔" : "לא נכון ✖"}</div>
               <div className="card">
                 <div className="ansrow"><span>ההכרזה שלך:</span> <Bid b={fb.bid}/></div>
                 {!fb.ok && <div className="ansrow"><span>התשובה הנכונה:</span> <Bid b={q.answer}/></div>}
