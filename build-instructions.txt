@@ -1,0 +1,4 @@
+Rebuild index.html from src/ (needs Node.js):
+  npm install react@18 react-dom@18 esbuild
+  npx esbuild src/bridge-mentor-entry.jsx --bundle --minify --format=iife --jsx=automatic --charset=utf8 --outfile=dist/app.js
+Then inline dist/app.js and dist/app.css into index.html (script and style tags in an HTML page with <div id="root">).

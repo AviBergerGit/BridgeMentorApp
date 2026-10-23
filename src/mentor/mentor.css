@@ -1,7 +1,7 @@
 * { margin:0; padding:0; box-sizing:border-box; }
 html,body { height:100%; }
 body { font-family:'Noto Sans Hebrew','Noto Sans',sans-serif; background:#dde5ea; }
-.app { max-width:430px; min-height:100vh; margin:0 auto; background:#eef2f5; position:relative; box-shadow:0 0 24px rgba(0,0,0,.12); }
+.app { max-width:430px; margin:0 auto; background:#eef2f5; position:relative; box-shadow:0 0 24px rgba(0,0,0,.12); }
 .header { background:linear-gradient(135deg,#0b5d3b,#159564); color:#fff; padding:18px 20px 20px; border-radius:0 0 24px 24px; box-shadow:0 3px 10px rgba(0,0,0,.15); }
 .header h1 { font-size:26px; font-weight:800; }
 .header .sub { font-size:16px; opacity:.92; margin-top:4px; }
@@ -108,3 +108,32 @@ body { font-family:'Noto Sans Hebrew','Noto Sans',sans-serif; background:#dde5ea
 .report-retry { display:block; text-align:center; text-decoration:none; }
 .report-status { color:#0b5d3b; font-weight:700; }
 .report-note { margin-top:10px; font-size:14px; color:#536875; }
+
+/* play/defense integration (approved structure 22/10) */
+.cd{direction:ltr;unicode-bidi:isolate;display:inline-block}
+.choicebtn{display:block;width:100%;background:#fff;border:2px solid #d3dde2;border-radius:14px;padding:14px 16px;font-size:19px;font-weight:700;color:#123;text-align:right;margin-bottom:10px;line-height:1.5;font-family:inherit;cursor:pointer}
+.choicebtn.sel{border-color:#0b5d3b;background:#e4f6ec}
+.contract{display:flex;flex-wrap:wrap;gap:8px;font-size:17px;font-weight:700;color:#123;margin-bottom:6px}
+.contract .pill{background:#eef4f0;border-radius:10px;padding:6px 12px}
+.dummytitle{display:flex;justify-content:space-between;align-items:baseline}
+.dummytitle .tag{font-size:14px;color:#5a6b75;font-weight:600}
+.fragline{margin:4px 0}
+.playhist{margin-top:8px;font-size:16px;color:#33414a;line-height:1.6}
+.scopenote{margin-top:8px;font-size:14px;color:#6b5b1e;background:#fff8e1;border-radius:8px;padding:6px 10px}
+
+/* uniform compact subtopic cards (Avi feedback 23/10): two-row grid, title clamped to 2 lines, fixed row heights */
+.trow { display:grid; grid-template-columns:auto 1fr auto auto; grid-template-areas:"icon name name name" "sub sub sum pct"; align-items:center; column-gap:12px; row-gap:4px; padding:14px 16px; }
+.trow .em { grid-area:icon; font-size:24px; align-self:center; }
+.trow .name { grid-area:name; font-size:17px; line-height:1.35; min-height:2.7em; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.trow .tsub { grid-area:sub; font-size:13px; margin-top:0; }
+.trow .tsum { grid-area:sum; padding:8px 12px; }
+.trow .pct { grid-area:pct; font-size:15px; }
+
+/* long question titles: own full-width row in the navbar instead of a squeezed column (Avi 23/10) */
+.navbar { flex-wrap:wrap; row-gap:8px; }
+.navbar .tname { flex:1 1 100%; order:3; font-size:16px; line-height:1.3; }
+/* Hierarchical practice selection, separate from answer history. */
+.topic-settings h2{margin:0 0 10px;font-size:21px}.settings-note{font-size:14px;line-height:1.65;color:#526474;margin:8px 0 14px}.bulk-actions{display:flex;gap:10px}.bulk-actions .secondary{flex:1;width:auto;margin:0;min-height:46px}.bulk-actions button:disabled{opacity:.5;cursor:default}.selection-count{font-size:15px;font-weight:700;color:#216955}.setting-groups{margin:18px 0}.setting-group{border:1px solid #dbe2e8;border-radius:12px;background:#fff;margin-bottom:10px;overflow:hidden}.setting-group-head{display:flex;align-items:center;background:#f4f7f9}.setting-parent{display:flex;align-items:center;gap:10px;flex:1;padding:12px;min-width:0;cursor:pointer;min-height:56px}.setting-parent span{min-width:0}.setting-parent strong{font-size:15px;line-height:1.5;display:block}.setting-parent small,.setting-child small{display:block;color:#586879;font-size:12px;line-height:1.5;margin-top:3px}.topic-settings input[type=checkbox]{width:22px;height:22px;flex-shrink:0;accent-color:#23765f;cursor:pointer}.expand-topics{width:44px;min-height:56px;flex-shrink:0;border:0;background:transparent;color:#314859;font-size:24px;cursor:pointer}.setting-children{padding:0 12px 0 8px;border-top:1px solid #dbe2e8}.setting-child{display:flex;align-items:center;gap:10px;min-height:56px;padding:10px 4px;border-bottom:1px solid #e7edf0;cursor:pointer;font-size:14px;line-height:1.5}.setting-child:last-child{border-bottom:0}.setting-child span{min-width:0}.setting-child.is-off{color:#6a7780}.empty-notice{background:#f0f3f6;border-radius:10px;padding:12px;font-size:14px;line-height:1.7}.practice-selection{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;justify-content:space-between;font-size:13px;margin-bottom:14px}.text-control{min-height:44px;background:none;border:0;color:#226651;text-decoration:underline;cursor:pointer}.inactive-label{display:block;font-size:11px;color:#697785;margin-top:3px}.empty-topics p{line-height:1.7;font-size:14px}.topic-settings button:focus-visible,.topic-settings input:focus-visible{outline:3px solid #398cbd;outline-offset:3px}
+.setrow.setlink{cursor:pointer;font-family:inherit;width:100%;text-align:right;flex-direction:column;align-items:stretch;gap:6px}.setrow.setlink:focus-visible{outline:3px solid #398cbd;outline-offset:3px}.setrow .setsub{display:block;font-size:13px;font-weight:400;color:#5a6b75}.setrow.setlink .chev{color:#8a99a3;font-weight:800;font-size:24px;flex-shrink:0}
+.setrow.setlink .settop{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%}
+.setrow.setlink .setcount{display:block;font-size:16px;font-weight:800}
