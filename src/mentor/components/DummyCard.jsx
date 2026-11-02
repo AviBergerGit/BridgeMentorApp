@@ -1,5 +1,5 @@
 import React from 'react';
-import { spaced } from '../lib/helpers.jsx';
+import { spaced } from '../lib/helpers.js';
 import { HandView } from './HandView.jsx';
 import { TokenText } from './TokenText.jsx';
 

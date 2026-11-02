@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { EMAIL, VERSION } from '../config.jsx';
+import { EMAIL, VERSION } from '../config.js';
 
 export function ReportIssue({settings = false}) {
   const [showHelp, setShowHelp] = useState(false);

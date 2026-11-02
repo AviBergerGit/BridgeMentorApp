@@ -1,6 +1,6 @@
 import React from 'react';
-import { EMAIL, VERSION } from '../config.jsx';
-import { TOPICS } from '../data/index.jsx';
+import { EMAIL, VERSION } from '../config.js';
+import { TOPICS } from '../data/index.js';
 import { ReportIssue } from '../components/ReportIssue.jsx';
 
 export default function SettingsScreen({ c }) {

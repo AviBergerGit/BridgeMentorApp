@@ -1,5 +1,5 @@
 import React from 'react';
-import { TOPICS, GROUPS, groupedIds } from '../data/index.jsx';
+import { TOPICS, GROUPS, groupedIds } from '../data/index.js';
 
 export default function TopicsScreen({ c }) {
   const { stats, enabled, activeQuestions, activeTopics, activeGroupQs, EmptyTopics, setScreen, setGrp, TopicRow, pct, startTopic } = c;

@@ -17,7 +17,7 @@ export default function PlayersScreen({ c }) {
               <button key={n} className={"secondary" + (n === current ? " cur" : "")} onClick={() => { selectUser(n); setScreen("home"); }}>{n}{n === current ? " ✓" : ""}</button>
             ))}
           </div>}
-          <div className="expl" style={{fontSize:13}}>הסטטיסטיקה נשמרת על המכשיר הזה, לפי שם.</div>
+          <div className="expl" style={{fontSize:13}}>ההתקדמות נשמרת בענן לפי שם, וזמינה מכל מכשיר.</div>
         </div>
       </>
   );

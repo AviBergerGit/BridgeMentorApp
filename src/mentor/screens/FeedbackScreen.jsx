@@ -1,7 +1,6 @@
 import React from 'react';
 import { Bid } from '../components/Bid.jsx';
 import { TokenText } from '../components/TokenText.jsx';
-import { FullAuction } from '../components/FullAuction.jsx';
 
 export default function FeedbackScreen({ c }) {
   const { setScreen, order, pos, fb, backList, setSumTid, curName, q, isPlay, next } = c;
@@ -15,10 +14,6 @@ export default function FeedbackScreen({ c }) {
             {!fb.ok && <div className="ansrow"><span>התשובה הנכונה:</span> {isPlay ? <TokenText t={q.answer}/> : <Bid b={q.answer}/>}</div>}
             <h2>הסבר</h2>
             <div className="expl">{isPlay ? <><TokenText t={q.answer}/> · <TokenText t={q.expl}/></> : <><Bid b={q.answer}/> · {q.expl}</>}</div>
-            {q.full && (<>
-              <h2 style={{marginTop:12}}>המכרז המלא</h2>
-              <FullAuction text={q.full} you={q.you}/>
-            </>)}
           </div>
           <button className="primary" onClick={next}>{pos + 1 >= order.length ? "סיום הסיבוב" : "שאלה הבאה"}</button>
           <button className="secondary" onClick={() => { setSumTid(q.topic); setScreen("summary"); }}>תקציר הנושא</button>

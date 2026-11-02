@@ -1,5 +1,5 @@
 import React from 'react';
-import { spaced } from '../lib/helpers.jsx';
+import { spaced } from '../lib/helpers.js';
 
 export function HandView({hand, hcp, tail, partial}) {
   const rows = [["♠","s",false],["♥","h",true],["♦","d",true],["♣","c",false]];

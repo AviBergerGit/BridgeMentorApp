@@ -1,5 +1,5 @@
 import React from 'react';
-import { TOPICS, GROUPS, topicOf, qsOf } from '../data/index.jsx';
+import { TOPICS, GROUPS, topicOf, qsOf } from '../data/index.js';
 
 export default function TopicSettingsScreen({ c }) {
   const { preferenceMessage, enabled, activeQuestions, activeTopics, setEnabled, expanded, setExpanded, setScreen, setGrp } = c;

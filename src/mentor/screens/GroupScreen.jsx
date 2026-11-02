@@ -1,5 +1,5 @@
 import React from 'react';
-import { topicOf, groupOf } from '../data/index.jsx';
+import { topicOf, groupOf } from '../data/index.js';
 
 export default function GroupScreen({ c }) {
   const { enabled, activeGroupQs, EmptyTopics, setScreen, grp, setGrp, TopicRow, startTopic } = c;

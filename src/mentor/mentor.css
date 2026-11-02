@@ -102,6 +102,9 @@ body { font-family:'Noto Sans Hebrew','Noto Sans',sans-serif; background:#dde5ea
 .topicrow .chev { font-size:26px; color:#0b5d3b; margin-inline-start:4px; }
 .gtitle { display:flex; justify-content:space-between; align-items:center; gap:8px; background:#0b5d3b; color:#fff; border-radius:12px; padding:10px 12px; margin:6px 0 8px; font-weight:800; font-size:16px; direction:rtl; }
 .gtitle .cnt { font-size:13px; font-weight:600; color:#d6f0e4; white-space:nowrap; }
+button.bar-row { display:block; width:100%; border:0; cursor:pointer; font:inherit; text-align:right; }
+button.bar-row:focus-visible { outline:3px solid #398cbd; outline-offset:2px; }
+.bar-row .chev { flex:0 0 auto; font-size:15px; color:#0b5d3b; font-weight:800; }
 
 .report-help { background:#fff; border-radius:16px; padding:16px; margin-bottom:12px; color:#234; font-size:16px; line-height:1.6; }
 .report-address { width:100%; min-height:44px; margin:12px 0; padding:8px; border:1px solid #b8c9c0; border-radius:8px; background:#f7faf8; font:16px sans-serif; text-align:left; }
@@ -137,3 +140,10 @@ body { font-family:'Noto Sans Hebrew','Noto Sans',sans-serif; background:#dde5ea
 .setrow.setlink{cursor:pointer;font-family:inherit;width:100%;text-align:right;flex-direction:column;align-items:stretch;gap:6px}.setrow.setlink:focus-visible{outline:3px solid #398cbd;outline-offset:3px}.setrow .setsub{display:block;font-size:13px;font-weight:400;color:#5a6b75}.setrow.setlink .chev{color:#8a99a3;font-weight:800;font-size:24px;flex-shrink:0}
 .setrow.setlink .settop{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%}
 .setrow.setlink .setcount{display:block;font-size:16px;font-weight:800}
+
+/* stats hierarchy: main topics visually distinct from subtopics */
+.bar-row.main { background:#e3f1e9; border:1.5px solid #b7d9c4; box-shadow:0 2px 6px rgba(11,93,59,.10); }
+.bar-row.main .tn { font-size:17px; }
+.stat-children { margin-inline-start:4px; margin-inline-end:14px; padding-inline-start:12px; border-inline-start:3px solid #cfe3d6; margin-bottom:10px; }
+.stat-children .bar-row { background:#f6faf7; box-shadow:none; border:1px solid #e2ece5; }
+.stat-children .bar-row .ttl { font-size:15px; font-weight:600; }

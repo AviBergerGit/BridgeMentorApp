@@ -1,5 +1,5 @@
 import React from 'react';
-import { topicOf, qsOf } from '../data/index.jsx';
+import { topicOf, qsOf } from '../data/index.js';
 import { SummaryCards } from '../components/SummaryCards.jsx';
 
 export default function SummaryScreen({ c }) {

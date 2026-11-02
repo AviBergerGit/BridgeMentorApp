@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import './mentor.css';
-import { shuffle } from './lib/helpers.jsx';
-import { QUESTIONS, TOPICS, PLAY_TOPICS, topicOf, groupOf, qsOfGroup, qsOf } from './data/index.jsx';
+import { shuffle } from './lib/helpers.js';
+import { QUESTIONS, TOPICS, PLAY_TOPICS, topicOf, groupOf, qsOfGroup, qsOf } from './data/index.js';
 import { ErrorBoundary } from './components/ErrorBoundary.jsx';
 import { ErrorScreen } from './components/ErrorScreen.jsx';
 import TopicSettingsScreen from './screens/TopicSettingsScreen.jsx';
@@ -16,7 +16,7 @@ import GroupScreen from './screens/GroupScreen.jsx';
 import PlayersScreen from './screens/PlayersScreen.jsx';
 import HomeScreen from './screens/HomeScreen.jsx';
 
-export default function Mentor({ stats, setStats, users, current, selectUser, disabledTopics = [], setDisabledTopics, preferenceMessage }){
+export default function Mentor({ stats, setStats, recordAnswer, users, current, selectUser, disabledTopics = [], setDisabledTopics, preferenceMessage, sync, storageStatus }){
   const enabled = id => !disabledTopics.includes(id);
   const activeQuestions = QUESTIONS.filter(q => enabled(q.topic));
   const activeTopics = TOPICS.filter(t => enabled(t.id));
@@ -80,7 +80,10 @@ export default function Mentor({ stats, setStats, users, current, selectUser, di
     const t = id === undefined ? tid : id;
     if (!activeQuestions.some(x => !t || x.topic === t || (groupOf(t) && groupOf(t).topics.includes(x.topic)))) { setScreen("topics"); return; }
     setTid(t);
-    setOrder(shuffle(QUESTIONS.map((x, i) => (enabled(x.topic) && (!t || x.topic === t || (groupOf(t) && groupOf(t).topics.includes(x.topic)))) ? i : -1).filter(i => i >= 0)).slice(0, 10));
+    const pool = QUESTIONS.map((x, i) => (enabled(x.topic) && (!t || x.topic === t || (groupOf(t) && groupOf(t).topics.includes(x.topic)))) ? i : -1).filter(i => i >= 0);
+    const fresh = [], wrongFirst = [], rest = [];
+    pool.forEach(i => { const a = stats.answered[QUESTIONS[i].id]; if (!a) fresh.push(i); else if (a.correct) rest.push(i); else wrongFirst.push(i); });
+    setOrder([...shuffle(fresh), ...shuffle(wrongFirst), ...shuffle(rest)].slice(0, 10));
     setPos(0); setSelected(null); setFb(null); setScreen("question");
   }
   function check(){
@@ -91,9 +94,11 @@ export default function Mentor({ stats, setStats, users, current, selectUser, di
       ok = selected === q.answer;
     } catch(e){ setScreen("error"); return; }
     setFb({ bid: selected, ok });
-    const ns = { ...stats, totalAnswers: stats.totalAnswers + 1, totalCorrect: stats.totalCorrect + (ok ? 1 : 0),
-      answered: { ...stats.answered, [q.id]: { correct: ok } } };
-    setStats(ns);
+    if (recordAnswer) { recordAnswer(q.id, ok); } else {
+      const ns = { ...stats, totalAnswers: stats.totalAnswers + 1, totalCorrect: stats.totalCorrect + (ok ? 1 : 0),
+        answered: { ...stats.answered, [q.id]: { correct: ok } } };
+      setStats(ns);
+    }
     setScreen("feedback");
   }
   function next(){
@@ -101,7 +106,7 @@ export default function Mentor({ stats, setStats, users, current, selectUser, di
     setPos(pos + 1); setSelected(null); setFb(null); setScreen("question");
   }
 
-  const ctx = { stats, setStats, users, current, selectUser, disabledTopics, setDisabledTopics, preferenceMessage, enabled, activeQuestions, activeTopics, activeGroupQs, setEnabled, expanded, setExpanded, EmptyTopics, nameInput, setNameInput, screen, setScreen, order, setOrder, pos, setPos, selected, setSelected, fb, setFb, tid, setTid, grp, setGrp, backList, TopicRow, sumTid, setSumTid, curName, q, options, isPlay, uniqueAnswered, pct, startTopic, check, next };
+  const ctx = { stats, setStats, sync, storageStatus, users, current, selectUser, disabledTopics, setDisabledTopics, preferenceMessage, enabled, activeQuestions, activeTopics, activeGroupQs, setEnabled, expanded, setExpanded, EmptyTopics, nameInput, setNameInput, screen, setScreen, order, setOrder, pos, setPos, selected, setSelected, fb, setFb, tid, setTid, grp, setGrp, backList, TopicRow, sumTid, setSumTid, curName, q, options, isPlay, uniqueAnswered, pct, startTopic, check, next };
 
   return (
     <ErrorBoundary onHome={() => setScreen("topics")}>
