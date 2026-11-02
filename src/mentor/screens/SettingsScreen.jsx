@@ -4,12 +4,13 @@ import { TOPICS } from '../data/index.js';
 import { ReportIssue } from '../components/ReportIssue.jsx';
 
 export default function SettingsScreen({ c }) {
-  const { activeTopics, setScreen } = c;
+  const { activeTopics, setScreen, adminToken } = c;
   return (
       <>
         <div className="header"><div className="navbar"><span className="back" onClick={() => setScreen("home")}>→</span><h1>הגדרות</h1></div></div>
         <div className="content">
           <div className="setrow link setlink" role="button" tabIndex={0} onClick={() => setScreen("topic-settings")} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setScreen("topic-settings"); } }}><span className="settop"><span className="settitle">הגדרות נושאים</span><span className="chev">‹</span></span><span className="setval setcount">{activeTopics.length} מתוך {TOPICS.length} מאופשרים</span><small className="setsub">בחירת נושאים ותתי־נושאים לתרגול</small></div>
+          <div className="setrow link setlink" role="button" tabIndex={0} onClick={() => setScreen(adminToken ? "admin-users" : "admin-code")} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setScreen(adminToken ? "admin-users" : "admin-code"); } }}><span className="settop"><span className="settitle"><span className="lock">🔒</span>ניהול משתמשים</span><span className="chev">‹</span></span><small className="setsub">מחיקת שם והתקדמות מהענן - מנהל בלבד</small></div>
           <div className="setrow"><span>שיטת הכרזות</span><span className="setval">SAYC</span></div>
           <div className="setrow"><span>גרסה</span><span className="setval">{VERSION}</span></div>
           <ReportIssue settings/>

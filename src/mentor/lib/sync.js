@@ -6,10 +6,18 @@
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../config.js';
 
 let listeners = [];
+let deletedListeners = [];
 let state = { status: 'synced', pending: 0 }; // synced | syncing | offline
 
 function emit() { listeners.forEach(f => f(state)); }
 export function onSyncChange(f) { listeners.push(f); f(state); return () => { listeners = listeners.filter(x => x !== f); }; }
+
+// Tombstone: the server refuses every write for an admin-deleted name. When a
+// reply carries user_deleted the caller purges its local copy of that name, so
+// a device that was offline during the deletion cleans up instead of
+// resurrecting the user. See supabase/admin-v1.sql.
+export function onUserDeleted(f) { deletedListeners.push(f); return () => { deletedListeners = deletedListeners.filter(x => x !== f); }; }
+function emitDeleted(username) { deletedListeners.forEach(f => f(username)); }
 
 const headers = {
   'apikey': SUPABASE_ANON_KEY,
@@ -43,6 +51,9 @@ export async function flushQueue(queueRef, removeEvent) {
           method: 'POST', headers, body: JSON.stringify(ev),
         });
         if (!res.ok) throw new Error('rpc ' + res.status);
+        let body = null;
+        try { body = await res.json(); } catch { /* no body */ }
+        if (body && body.user_deleted) { removeEvent(ev.p_event_id); emitDeleted(ev.p_username); continue; }
         removeEvent(ev.p_event_id);
       } catch {
         state = { status: 'offline', pending: queueRef.current.length }; emit();
@@ -54,18 +65,19 @@ export async function flushQueue(queueRef, removeEvent) {
 }
 
 // Pull a user's server-side progress. Returns null when the name is unknown on the server.
+// Per-name RPC (not table SELECTs) so that enumerating ALL users can stay admin-only.
 export async function loadUser(username) {
-  const [uRes, aRes] = await Promise.all([
-    fetch(SUPABASE_URL + '/rest/v1/users?username=eq.' + encodeURIComponent(username), { headers }),
-    fetch(SUPABASE_URL + '/rest/v1/answers?username=eq.' + encodeURIComponent(username) + '&select=question_id,correct', { headers }),
-  ]);
-  if (!uRes.ok || !aRes.ok) throw new Error('load failed');
-  const u = await uRes.json(); const a = await aRes.json();
-  if (!u.length) return null;
+  const res = await fetch(SUPABASE_URL + '/rest/v1/rpc/get_user_state', {
+    method: 'POST', headers,
+    body: JSON.stringify({ p_username: username }),
+  });
+  if (!res.ok) throw new Error('load failed');
+  const j = await res.json();
+  if (!j) return null;
   const answered = {};
-  a.forEach(r => { answered[r.question_id] = { correct: r.correct }; });
-  return { answered, totalAnswers: u[0].total_answers, totalCorrect: u[0].total_correct,
-    settings: u[0].disabled_topics || [], settingsRev: u[0].settings_rev || 0 };
+  (j.answers || []).forEach(r => { answered[r.question_id] = { correct: r.correct }; });
+  return { answered, totalAnswers: j.total_answers, totalCorrect: j.total_correct,
+    settings: j.disabled_topics || [], settingsRev: j.settings_rev || 0 };
 }
 
 // One-time migration of existing device progress via a single atomic server transaction:
@@ -85,6 +97,8 @@ export async function migrateUser(username, stats) {
     }),
   });
   if (!res.ok) throw new Error('migrate ' + res.status);
+  // { user_deleted: true } when the admin deleted this name: caller purges locally.
+  try { return await res.json(); } catch { return null; }
 }
 
 // Pure merge of server state into a user's local stats for display (unit-testable).

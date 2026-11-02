@@ -14,9 +14,28 @@ import QuestionScreen from './screens/QuestionScreen.jsx';
 import TopicsScreen from './screens/TopicsScreen.jsx';
 import GroupScreen from './screens/GroupScreen.jsx';
 import PlayersScreen from './screens/PlayersScreen.jsx';
+import AdminCodeScreen from './screens/AdminCodeScreen.jsx';
+import AdminUsersScreen from './screens/AdminUsersScreen.jsx';
+import AdminConfirmScreen from './screens/AdminConfirmScreen.jsx';
 import HomeScreen from './screens/HomeScreen.jsx';
 
-export default function Mentor({ stats, setStats, recordAnswer, users, current, selectUser, disabledTopics = [], setDisabledTopics, preferenceMessage, sync, storageStatus }){
+// Dev/preview deep links shared by the runtime hash handler and static renders
+// (window.instinctFile.initialRoute, used by the file renderer for screenshots).
+function adminRoute(h){
+  if (h === "players") return { screen: "players" };
+  if (h === "admin-code-demo" || h === "admin-code") return { screen: "admin-code", test: h === "admin-code-demo" ? "idle" : null };
+  if (h === "admin-code-wrong") return { screen: "admin-code", test: "wrong" };
+  if (h === "admin-code-locked") return { screen: "admin-code", test: "locked" };
+  if (h === "admin-offline") return { screen: "admin-code", test: "offline" };
+  if (h === "admin-setup") return { screen: "admin-code", test: "setup" };
+  if (h.startsWith("admin-setup-")) return { screen: "admin-code", test: "setup", setupKey: h.slice("admin-setup-".length) };
+  if (h === "admin-users") return { screen: "admin-users", testUsers: [{name:"אבי",answered:116,correct:97},{name:"דוד",answered:54,correct:38},{name:"שרה",answered:23,correct:15},{name:"משה",answered:8,correct:3}] };
+  if (h === "admin-confirm") return { screen: "admin-confirm", testUsers: [], target: {name:"דוד",answered:54,correct:38} };
+  if (h === "settings") return { screen: "settings" };
+  return null;
+}
+
+export default function Mentor({ stats, setStats, recordAnswer, users, current, selectUser, disabledTopics = [], setDisabledTopics, preferenceMessage, sync, storageStatus, deletedNotice, clearDeletedNotice }){
   const enabled = id => !disabledTopics.includes(id);
   const activeQuestions = QUESTIONS.filter(q => enabled(q.topic));
   const activeTopics = TOPICS.filter(t => enabled(t.id));
@@ -25,7 +44,8 @@ export default function Mentor({ stats, setStats, recordAnswer, users, current, 
   const [expanded, setExpanded] = useState({g1:true});
   const EmptyTopics = () => <div className="card empty-topics"><h2>אין נושאים מאופשרים לתרגול</h2><p>אפשר נושא ראשי או תת־נושא בהגדרות כדי להתחיל. ההתקדמות הקודמת נשמרת.</p><button className="primary" onClick={() => setScreen("topic-settings")}>בחירת נושאים בהגדרות</button></div>;
   const [nameInput, setNameInput] = useState("");
-  const [screen, setScreen] = useState(current ? "home" : "players"); // home | topics | question | feedback | summary | stats | settings | topic-settings | done | error
+  const initRoute = adminRoute(((typeof window !== "undefined" && window.instinctFile && window.instinctFile.initialRoute) || "").replace(/^[#/]+/, ""));
+  const [screen, setScreen] = useState(initRoute ? initRoute.screen : (current ? "home" : "players")); // home | topics | question | feedback | summary | stats | settings | topic-settings | done | error | admin-*
   const [order, setOrder] = useState(() => QUESTIONS.map((_, i) => i));
   const [pos, setPos] = useState(0);
   const [selected, setSelected] = useState(null);
@@ -47,6 +67,11 @@ export default function Mentor({ stats, setStats, recordAnswer, users, current, 
     );
   };
   const [sumTid, setSumTid] = useState(TOPICS[0].id);
+  const [adminToken, setAdminToken] = useState(null);
+  const [adminTarget, setAdminTarget] = useState(initRoute && initRoute.target ? initRoute.target : null);
+  const [adminTestState, setAdminTestState] = useState(initRoute && initRoute.test ? initRoute.test : null);
+  const [adminSetupKey, setAdminSetupKey] = useState(initRoute && initRoute.setupKey ? initRoute.setupKey : null);
+  const [adminTestUsers, setAdminTestUsers] = useState(initRoute && initRoute.testUsers ? initRoute.testUsers : null);
   // restore view to the top of the app on every screen change (hosted viewer keeps parent scroll otherwise)
   useEffect(() => {
     const el = document.querySelector(".bm-strip") || document.querySelector(".app");
@@ -64,6 +89,10 @@ export default function Mentor({ stats, setStats, recordAnswer, users, current, 
       setScreen("feedback");
     } else if (h === "group"){
       setGrp("g1"); setScreen("group");
+    } else if (h.startsWith("admin")){
+      // Demo / deep links for development previews of the admin screens.
+      const r = adminRoute(h);
+      if (r){ setAdminTestState(r.test || null); if (r.setupKey) setAdminSetupKey(r.setupKey); if (r.testUsers) setAdminTestUsers(r.testUsers); if (r.target) setAdminTarget(r.target); setScreen(r.screen); }
     } else if (["topics","question","summary","stats","settings","topic-settings","done","error","home"].includes(h)){
       if (h === "question"){ setOrder(QUESTIONS.map((_, i) => i)); setPos(0); setSelected(null); }
       setScreen(h);
@@ -106,7 +135,7 @@ export default function Mentor({ stats, setStats, recordAnswer, users, current, 
     setPos(pos + 1); setSelected(null); setFb(null); setScreen("question");
   }
 
-  const ctx = { stats, setStats, sync, storageStatus, users, current, selectUser, disabledTopics, setDisabledTopics, preferenceMessage, enabled, activeQuestions, activeTopics, activeGroupQs, setEnabled, expanded, setExpanded, EmptyTopics, nameInput, setNameInput, screen, setScreen, order, setOrder, pos, setPos, selected, setSelected, fb, setFb, tid, setTid, grp, setGrp, backList, TopicRow, sumTid, setSumTid, curName, q, options, isPlay, uniqueAnswered, pct, startTopic, check, next };
+  const ctx = { stats, setStats, sync, storageStatus, users, current, selectUser, disabledTopics, setDisabledTopics, preferenceMessage, adminToken, setAdminToken, adminTarget, setAdminTarget, adminTestState, adminSetupKey, adminTestUsers, deletedNotice, clearDeletedNotice, enabled, activeQuestions, activeTopics, activeGroupQs, setEnabled, expanded, setExpanded, EmptyTopics, nameInput, setNameInput, screen, setScreen, order, setOrder, pos, setPos, selected, setSelected, fb, setFb, tid, setTid, grp, setGrp, backList, TopicRow, sumTid, setSumTid, curName, q, options, isPlay, uniqueAnswered, pct, startTopic, check, next };
 
   return (
     <ErrorBoundary onHome={() => setScreen("topics")}>
@@ -133,6 +162,12 @@ export default function Mentor({ stats, setStats, recordAnswer, users, current, 
         {screen === "settings" && <SettingsScreen c={ctx}/>}
 
         {screen === "topic-settings" && <TopicSettingsScreen c={ctx}/>}
+
+        {screen === "admin-code" && <AdminCodeScreen c={ctx}/>}
+
+        {screen === "admin-users" && <AdminUsersScreen c={ctx}/>}
+
+        {screen === "admin-confirm" && <AdminConfirmScreen c={ctx}/>}
 
         {screen === "error" && (
           <ErrorScreen onRetry={() => setScreen("question")} onHome={() => setScreen("topics")}/>

@@ -4,7 +4,7 @@ import './style.css';
 // @ts-ignore
 import Mentor from './Mentor.jsx';
 // @ts-ignore
-import { makeEvent, loadUser, migrateUser, flushQueue, mergeRemoteStats, onSyncChange, saveSettings, resolveSettingsSync, applyOps } from './mentor/lib/sync.js';
+import { makeEvent, loadUser, migrateUser, flushQueue, mergeRemoteStats, onSyncChange, onUserDeleted, saveSettings, resolveSettingsSync, applyOps } from './mentor/lib/sync.js';
 
 type UserStats = { answered: Record<string, { correct: boolean }>; totalAnswers: number; totalCorrect: number };
 type StatsData = { current: string | null; users: Record<string, UserStats> };
@@ -26,6 +26,22 @@ export function App() {
     const [migrated, setMigrated] = useLocalState<string[]>('bm-migrated-v1', []);
     const [backups, setBackups] = useLocalState<Record<string, { date: string; stats: UserStats }>>('bm-backups-v1', {});
     const [sync, setSync] = React.useState({ status: 'synced', pending: 0 });
+    const [deletedNotice, setDeletedNotice] = React.useState<string | null>(null);
+
+    // The admin deleted this name in the cloud (server tombstoned it): drop every
+    // local trace - stats, settings, migration flag, queued events - and stop
+    // syncing it. Without this the next open would migrate the local copy back.
+    const purgeUser = (name: string) => {
+        const d = dataRef.current;
+        const u = { ...(d.users || {}) }; delete u[name];
+        setData({ ...d, users: u, current: d.current === name ? null : d.current });
+        const p = { ...(prefRef.current || {}) }; delete p[name]; setPreferences(p);
+        const pm = { ...(prefMetaRef.current || {}) }; delete pm[name]; prefMetaRef.current = pm; setPrefMeta(pm);
+        setMigrated(migratedRef.current.filter(n => n !== name));
+        queueRef.current = queueRef.current.filter(e => e.p_username !== name); setQueue(queueRef.current);
+        setDeletedNotice(name);
+    };
+    React.useEffect(() => onUserDeleted(purgeUser), []);
 
     // Ref mirrors so event handlers always see the latest values without waiting for a render.
     const queueRef = React.useRef(queue); queueRef.current = queue;
@@ -84,6 +100,7 @@ export function App() {
                 const t = meta.touch || 0;
                 let r: any = null;
                 try { r = await saveSettings(name, ids, meta.rev); } catch { return; /* offline: ops stay */ }
+                if (r && r.user_deleted) { purgeUser(name); return; }
                 const mm = { ...(prefMetaRef.current || {}) };
                 const latest = mm[name] || { rev: 0, ops: {}, touch: 0 };
                 if (r && r.applied) {
@@ -133,7 +150,8 @@ export function App() {
                     : [];
                 if (hasLocal && (!remote || remote.totalAnswers < (local.totalAnswers || 0) || missingOnServer.length)) {
                     if (!backupsRef.current[name]) setBackups({ ...backupsRef.current, [name]: { date: new Date().toISOString().slice(0, 10), stats: local } });
-                    await migrateUser(name, local);
+                    const mig = await migrateUser(name, local);
+                    if (mig && mig.user_deleted) { purgeUser(name); return; }
                     if (!migratedRef.current.includes(name)) setMigrated([...migratedRef.current, name]);
                     remote = await loadUser(name);
                 }
@@ -197,9 +215,15 @@ export function App() {
         }
     }, [saved.ready, data.current]);
 
-    if (!preferenceSaved.ready || !saved.ready) return <div style={{ padding: 24, textAlign: 'center' }}>טוען…</div>;
-    const users = data.users || {};
-    const current = data.current && users[data.current] ? data.current : null;
+    // Dev/static-render affordance: admin + settings deep-link routes render with a
+    // demo user even before local state hydrates (hosted app always gets route "/").
+    const routeHash = (((globalThis as any).window?.instinctFile?.initialRoute) || "").replace(/^[#/]+/, "");
+    const demoRoute = routeHash === "settings" || routeHash === "players" || routeHash.startsWith("admin");
+    if (!preferenceSaved.ready || !saved.ready) {
+        if (!demoRoute) return <div style={{ padding: 24, textAlign: 'center' }}>טוען…</div>;
+    }
+    const users = demoRoute && !Object.keys(data.users || {}).length ? { "אבי": EMPTY_USER } : (data.users || {});
+    const current = data.current && users[data.current] ? data.current : (demoRoute ? "אבי" : null);
     const stats = current ? users[current] : EMPTY_USER;
     const setStats = (ns: UserStats) => { if (current) setData({ ...data, users: { ...users, [current]: ns } }); };
     const recordAnswer = (qid: string, ok: boolean) => {
@@ -221,7 +245,8 @@ export function App() {
     return <>
         <div className="bm-host">
             <div className="bm-strip" aria-hidden="true" />
-            <Mentor disabledTopics={preferences[current || ""] || []} setDisabledTopics={(ids: string[]) => { if (current) setDisabledTopicsFor(current, ids); }} preferenceMessage={preferenceSaved.message} storageStatus={saved.status} stats={stats} setStats={setStats} recordAnswer={recordAnswer} users={users} current={current} selectUser={selectUser} sync={sync} />
+            {/* demo renders inject the real configured topics: cloud settings_rev 7 has t53,t19 disabled */}
+            <Mentor deletedNotice={deletedNotice} clearDeletedNotice={() => setDeletedNotice(null)} disabledTopics={demoRoute ? ["t53", "t19"] : (preferences[current || ""] || [])} setDisabledTopics={(ids: string[]) => { if (current) setDisabledTopicsFor(current, ids); }} preferenceMessage={preferenceSaved.message} storageStatus={saved.status} stats={stats} setStats={setStats} recordAnswer={recordAnswer} users={users} current={current} selectUser={selectUser} sync={sync} />
         </div>
         {saved.message ? <div style={{ fontSize: 12, textAlign: 'center', padding: 8 }}>{saved.message}</div> : null}
     </>;
