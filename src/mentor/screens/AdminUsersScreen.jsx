@@ -4,6 +4,11 @@ import { listCloudUsers } from '../lib/admin.js';
 // User management (admin only, after password sign-in). Deleting a name
 // removes its cloud progress and settings permanently; the name currently in
 // use on this device cannot be deleted from here.
+// The owner's name is never deletable - mirrors the server-side protected-user
+// guard in delete_user (supabase/admin-v4-password.sql), independent of the
+// name currently in use on this device.
+const PROTECTED_USER = 'אבי';
+
 export default function AdminUsersScreen({ c }) {
   const { current, adminToken, setScreen, setAdminTarget, setAdminToken } = c;
   const [rows, setRows] = useState(c.adminTestUsers || null);
@@ -34,7 +39,7 @@ export default function AdminUsersScreen({ c }) {
           {rows && rows.map(u => (
             <div className="userrow" key={u.name}>
               <span className="uname">{u.name}<span className="usub">{u.answered} שאלות נענו · {u.correct} נכון</span></span>
-              {u.name === current
+              {u.name === current || u.name === PROTECTED_USER
                 ? <span className="me">מנהל</span>
                 : <button className="del" onClick={() => { setAdminTarget(u); setScreen("admin-confirm"); }}>🗑 מחיקה</button>}
             </div>

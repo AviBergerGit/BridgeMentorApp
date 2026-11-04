@@ -22,6 +22,10 @@ import HomeScreen from './screens/HomeScreen.jsx';
 // Dev/preview deep links shared by the runtime hash handler and static renders
 // (window.instinctFile.initialRoute, used by the file renderer for screenshots).
 function adminRoute(h){
+  if (h.startsWith("q-")) {
+    const qi = QUESTIONS.findIndex(x => x.id === h.slice(2));
+    if (qi >= 0) return { screen: "question", qi };
+  }
   if (h === "players") return { screen: "players" };
   if (h === "admin-code-demo" || h === "admin-code") return { screen: "admin-code", test: h === "admin-code-demo" ? "idle" : null };
   if (h === "admin-code-wrong") return { screen: "admin-code", test: "wrong" };
@@ -32,6 +36,8 @@ function adminRoute(h){
   if (h === "admin-users") return { screen: "admin-users", testUsers: [{name:"אבי",answered:116,correct:97},{name:"דוד",answered:54,correct:38},{name:"שרה",answered:23,correct:15},{name:"משה",answered:8,correct:3}] };
   if (h === "admin-confirm") return { screen: "admin-confirm", testUsers: [], target: {name:"דוד",answered:54,correct:38} };
   if (h === "settings") return { screen: "settings" };
+  if (h === "group-demo") return { screen: "group", grp: "g1" };
+  if (h === "topics-demo") return { screen: "topics" };
   return null;
 }
 
@@ -46,16 +52,18 @@ export default function Mentor({ stats, setStats, recordAnswer, users, current, 
   const [nameInput, setNameInput] = useState("");
   const initRoute = adminRoute(((typeof window !== "undefined" && window.instinctFile && window.instinctFile.initialRoute) || "").replace(/^[#/]+/, ""));
   const [screen, setScreen] = useState(initRoute ? initRoute.screen : (current ? "home" : "players")); // home | topics | question | feedback | summary | stats | settings | topic-settings | done | error | admin-*
-  const [order, setOrder] = useState(() => QUESTIONS.map((_, i) => i));
+  const [order, setOrder] = useState(() => initRoute && initRoute.qi !== undefined ? [initRoute.qi] : QUESTIONS.map((_, i) => i));
   const [pos, setPos] = useState(0);
   const [selected, setSelected] = useState(null);
   const [fb, setFb] = useState(null); // {bid, ok}
   const [tid, setTid] = useState(null);
-  const [grp, setGrp] = useState(null);
+  const [grp, setGrp] = useState((initRoute && initRoute.grp) || null);
   const backList = () => setScreen(grp ? "group" : "topics");
   const TopicRow = ({t}) => {
     const qs = qsOf(t.id);
     const done = qs.filter(x => stats.answered[x.id]).length;
+    const ok = qs.filter(x => stats.answered[x.id] && stats.answered[x.id].correct).length;
+    const wrong = done - ok;
     return (
       <div className="topicrow trow" onClick={() => startTopic(t.id)}>
         <span className="em">{t.icon}</span>
@@ -63,6 +71,7 @@ export default function Mentor({ stats, setStats, recordAnswer, users, current, 
         <span className="tsub">{qs.length} {qs.length === 1 ? "שאלה" : "שאלות"}</span>
         <button className="tsum" onClick={e => { e.stopPropagation(); setSumTid(t.id); setScreen("summary"); }}>תקציר</button>
         <span className="pct">{Math.round(100 * done / qs.length)}%</span>
+        <div className="tmeter"><div className="bar"><div style={{width: Math.round(100 * done / qs.length) + "%"}}></div></div><span className="cnt">{ok} נכון · {wrong} לא נכון</span></div>
       </div>
     );
   };
@@ -81,14 +90,26 @@ export default function Mentor({ stats, setStats, recordAnswer, users, current, 
 
   // Demo / deep links for development previews: #topics #question #correct #wrong #summary #stats #settings #done #error
   useEffect(() => {
-    const h = (window.location.hash || "").replace("#", "");
+    const initial = (window.instinctFile && window.instinctFile.initialRoute) || "";
+    let h = initial || window.location.hash || "";
+    try {
+      h = decodeURIComponent(h).replace(/^[#/]+/, "");
+      if (h.startsWith("?")) h = new URLSearchParams(h).get("route") || "";
+      if (!h || h.startsWith("file-preview")) h = new URLSearchParams(window.location.search).get("route") || "";
+    } catch (e) { h = ""; }
     if (!h) return;
     if (h === "correct" || h === "wrong"){
       setOrder(QUESTIONS.map((_, i) => i)); setPos(0);
       setFb({ bid: h === "correct" ? QUESTIONS[0].answer : "Pass", ok: h === "correct" });
       setScreen("feedback");
-    } else if (h === "group"){
+    } else if (h.startsWith("q-")){
+      // Deep link to one question by id, e.g. #q-s23e1 (development previews).
+      const i = QUESTIONS.findIndex(x => x.id === h.slice(2));
+      if (i >= 0){ setOrder([i]); setPos(0); setSelected(null); setFb(null); setScreen("question"); }
+    } else if (h === "group" || h === "group-demo"){
       setGrp("g1"); setScreen("group");
+    } else if (h === "topics-demo"){
+      setScreen("topics");
     } else if (h.startsWith("admin")){
       // Demo / deep links for development previews of the admin screens.
       const r = adminRoute(h);

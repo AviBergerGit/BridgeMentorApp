@@ -13,7 +13,7 @@ export default function PlayersScreen({ c }) {
             <button className={"primary" + (nameInput.trim() ? "" : " disabled")} onClick={() => { if (nameInput.trim()){ selectUser(nameInput); setNameInput(""); if (c.clearDeletedNotice) c.clearDeletedNotice(); setScreen("home"); } }}>המשך</button>
           </div>
           {c.adminToken && Object.keys(users).length > 0 && <div className="card">
-            <h2>שמות קיימים</h2>{/* local device-history list - admin session only: non-admins must not see other names */}
+            <h2>שמות קיימים</h2>{/* local device-history list - admin session only (Avi, 2026-11-02): non-admins must not see other names */}
             {Object.keys(users).map(n => (
               <button key={n} className={"secondary" + (n === current ? " cur" : "")} onClick={() => { selectUser(n); if (c.clearDeletedNotice) c.clearDeletedNotice(); setScreen("home"); }}>{n}{n === current ? " ✓" : ""}</button>
             ))}

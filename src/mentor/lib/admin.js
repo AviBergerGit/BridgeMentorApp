@@ -1,4 +1,4 @@
-// Admin (user-management) API: fixed admin password, no email.
+// Admin (user-management) API: fixed admin password, no email (Avi, 2026-11-02).
 // Server-side bcrypt verification + lockout (5 failures -> 15 min) + 30-minute
 // session tokens (supabase/admin-v4-password.sql). This RPC path is the ONLY
 // admin sign-in path - Supabase password auth is unused and grants nothing.
@@ -40,7 +40,7 @@ export async function adminDeleteUser(token, username, currentUsername) {
 }
 
 // Cloud user list with per-name answered/correct counts. Token-gated:
-// a non-admin has no way to see the other users.
+// a non-admin has no way to see the other users (Avi, 2026-11-02).
 export async function listCloudUsers(token) {
   const rows = await rpc('admin_list_users', { p_token: token });
   return (rows || []).map(r => ({ name: r.username, answered: r.total_answers || 0, correct: r.total_correct || 0 }));

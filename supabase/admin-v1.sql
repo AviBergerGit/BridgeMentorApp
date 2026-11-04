@@ -1,4 +1,4 @@
--- Admin user deletion with tombstone.
+-- Admin user deletion with tombstone (2026-11-02; feature approved by Avi via Instinct).
 -- Admin = caller whose verified Supabase Auth email is listed in public.admins.
 -- Ordinary name-only sync (anon key) is unchanged, except that the three sync RPCs
 -- refuse tombstoned names so a deleted user cannot be resurrected by an old device.
@@ -6,7 +6,7 @@
 create table if not exists public.admins (
   email text primary key
 );
--- Add the administrator's verified email to this table before enabling admin access.
+insert into public.admins(email) values ('vabergermail@gmail.com') on conflict do nothing;
 
 create table if not exists public.deleted_users (
   username text primary key,

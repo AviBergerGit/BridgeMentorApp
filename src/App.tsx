@@ -4,6 +4,8 @@ import './style.css';
 // @ts-ignore
 import Mentor from './Mentor.jsx';
 // @ts-ignore
+import { QUESTIONS } from './mentor/data/index.js';
+// @ts-ignore
 import { makeEvent, loadUser, migrateUser, flushQueue, mergeRemoteStats, onSyncChange, onUserDeleted, saveSettings, resolveSettingsSync, applyOps } from './mentor/lib/sync.js';
 
 type UserStats = { answered: Record<string, { correct: boolean }>; totalAnswers: number; totalCorrect: number };
@@ -12,8 +14,33 @@ type SyncEvent = { p_event_id: string; p_username: string; p_question_id: string
 
 const EMPTY_DATA: StatsData = { current: null, users: {} };
 const EMPTY_USER: UserStats = { answered: {}, totalAnswers: 0, totalCorrect: 0 };
+// Deterministic demo progress for screenshot/deep-link previews of the topic
+// list (#group-demo / #topics-demo): mixed correct/wrong/unanswered, local only.
+const DEMO_STATS: UserStats = (() => {
+    const answered: Record<string, { correct: boolean }> = {};
+    let totalAnswers = 0, totalCorrect = 0;
+    QUESTIONS.forEach((q: any, i: number) => {
+        if (i % 5 === 4) return;
+        const correct = i % 4 !== 3;
+        answered[q.id] = { correct };
+        totalAnswers++; if (correct) totalCorrect++;
+    });
+    return { answered, totalAnswers, totalCorrect };
+})();
 
+// Isolated read-only exercise preview. No cloud or persistence hooks are mounted.
 export function App() {
+    let route = "";
+    try {
+        const w = (globalThis as any).window;
+        route = decodeURIComponent(w?.instinctFile?.initialRoute || w?.location?.hash || "").replace(/^[#/]+/, "");
+        if (route.startsWith("?")) route = new URLSearchParams(route).get("route") || "";
+        if (!route || route.startsWith("file-preview")) route = new URLSearchParams(w?.location?.search || "").get("route") || "";
+    } catch { /* no route */ }
+    if (route.startsWith("q-")) return <div className="bm-host"><div className="bm-strip" aria-hidden="true" /><Mentor stats={EMPTY_USER} users={{}} current={null} setStats={() => {}} recordAnswer={() => {}} selectUser={() => {}} /></div>;
+    return <LiveApp />;
+}
+function LiveApp() {
     const [data, setData, saved] = useLocalState<StatsData>('bm-stats-v2', EMPTY_DATA);
     const [preferences, setPreferences, preferenceSaved] = useLocalState<Record<string, string[]>>('bm-topics-v1', {});
     type PrefMeta = { rev: number; ops: Record<string, boolean>; touch: number; dirty?: boolean };
@@ -217,14 +244,16 @@ export function App() {
 
     // Dev/static-render affordance: admin + settings deep-link routes render with a
     // demo user even before local state hydrates (hosted app always gets route "/").
-    const routeHash = (((globalThis as any).window?.instinctFile?.initialRoute) || "").replace(/^[#/]+/, "");
-    const demoRoute = routeHash === "settings" || routeHash === "players" || routeHash.startsWith("admin");
+    const routeParam = (() => { try { return new URLSearchParams((globalThis as any).window?.location?.search || "").get("route") || ""; } catch { return ""; } })();
+    const routeHash = ((((globalThis as any).window?.instinctFile?.initialRoute) || routeParam || ((globalThis as any).window?.location?.hash) || "")).replace(/^[#/]+/, "");
+    const demoStatsRoute = routeHash === "group-demo" || routeHash === "topics-demo";
+    const demoRoute = routeHash === "settings" || routeHash === "players" || routeHash.startsWith("admin") || demoStatsRoute;
     if (!preferenceSaved.ready || !saved.ready) {
         if (!demoRoute) return <div style={{ padding: 24, textAlign: 'center' }}>טוען…</div>;
     }
-    const users = demoRoute && !Object.keys(data.users || {}).length ? { "אבי": EMPTY_USER } : (data.users || {});
-    const current = data.current && users[data.current] ? data.current : (demoRoute ? "אבי" : null);
-    const stats = current ? users[current] : EMPTY_USER;
+    const users = demoRoute && !Object.keys(data.users || {}).length ? (demoStatsRoute ? { "בדיקה": DEMO_STATS } : { "אבי": EMPTY_USER }) : (data.users || {});
+    const current = data.current && users[data.current] ? data.current : (demoStatsRoute ? "בדיקה" : (demoRoute ? "אבי" : null));
+    const stats = current ? (users[current] || EMPTY_USER) : EMPTY_USER;
     const setStats = (ns: UserStats) => { if (current) setData({ ...data, users: { ...users, [current]: ns } }); };
     const recordAnswer = (qid: string, ok: boolean) => {
         if (!current) return;

@@ -1,5 +1,7 @@
 -- admin-v4-password.sql: fixed admin password without email.
--- Fixed admin password with failed-attempt lockout.
+-- User evidence: Avi approved the switch on WhatsApp 2026-11-02 12:40:42 IST,
+-- message wamid.HBgMOTcyNTQ3NTA3MDY5FQIAEhgWM0VCMENFRUFGODk3NTQyRUY3QkFGMQA= ("כן"),
+-- answering main's offer of a strong fixed admin password with failed-attempt lockout.
 -- All admin capability flows through these RPCs: server-side bcrypt verification
 -- (pgcrypto) + server-enforced lockout (5 failures -> 15 min) + 30-min admin session
 -- tokens. Supabase password sign-in is not used and grants no admin power, so there

@@ -112,6 +112,22 @@ button.bar-row:focus-visible { outline:3px solid #398cbd; outline-offset:2px; }
 .report-status { color:#0b5d3b; font-weight:700; }
 .report-note { margin-top:10px; font-size:14px; color:#536875; }
 
+/* Unified table illustration on white: the dummy at the top and the player's
+   hand at the bottom edge of one white panel, a single picture, not separate
+   cards; only the central square table is green. Avi 3/11 */
+.tableview { border-radius:18px; background:#fff; border:2px solid #d3dde2; box-shadow:0 2px 8px rgba(0,0,0,.08); padding:10px 14px 12px; margin-bottom:14px; }
+.tableview .tv-title { font-size:15px; font-weight:700; color:#34565a; text-align:center; margin-bottom:5px; }
+/* Square table drawn at the center of the illustration, between the dummy
+   (top) and the player's hand (bottom); the only green element on white - Avi 3/11 */
+/* Card rows centered to the table square - Avi 3/11 */
+.tableview .hand { display:flex; flex-direction:column; align-items:flex-start; width:fit-content; margin:0 auto; text-align:left; line-height:1.45; }
+.tableview .hand .hcp { align-self:center; margin-top:2px; }
+.tableview .table-square { width:88px; height:88px; margin:10px auto; border-radius:12px; background:radial-gradient(circle at 50% 42%, #239764 0%, #157a4c 55%, #0f6b41 100%); border:4px solid #c9b795; box-shadow:0 1px 4px rgba(0,0,0,.16), inset 0 0 0 2px rgba(255,255,255,.10); }
+.tableview .dummytitle { display:block; color:#34565a; font-size:15px; font-weight:700; text-align:center; margin-bottom:5px; }
+.tableview .dummytitle .tag { display:block; color:#5a6b75; font-size:13px; font-weight:400; margin-top:2px; }
+.tableview .playhist { color:#5a6b75; font-size:14px; text-align:center; margin-top:3px; }
+.tableview .scopenote { background:#f7f8f8; color:#5a6b75; text-align:center; font-size:13px; margin-top:10px; padding:7px 9px; }
+
 /* play/defense integration (approved structure 22/10) */
 .cd{direction:ltr;unicode-bidi:isolate;display:inline-block}
 .choicebtn{display:block;width:100%;background:#fff;border:2px solid #d3dde2;border-radius:14px;padding:14px 16px;font-size:19px;font-weight:700;color:#123;text-align:right;margin-bottom:10px;line-height:1.5;font-family:inherit;cursor:pointer}
@@ -125,12 +141,16 @@ button.bar-row:focus-visible { outline:3px solid #398cbd; outline-offset:2px; }
 .scopenote{margin-top:8px;font-size:14px;color:#6b5b1e;background:#fff8e1;border-radius:8px;padding:6px 10px}
 
 /* uniform compact subtopic cards (Avi feedback 23/10): two-row grid, title clamped to 2 lines, fixed row heights */
-.trow { display:grid; grid-template-columns:auto 1fr auto auto; grid-template-areas:"icon name name name" "sub sub sum pct"; align-items:center; column-gap:12px; row-gap:4px; padding:14px 16px; }
+.trow { display:grid; grid-template-columns:auto 1fr auto auto; grid-template-areas:"icon name name name" "sub sub sum pct" "meter meter meter meter"; align-items:center; column-gap:12px; row-gap:4px; padding:14px 16px; }
 .trow .em { grid-area:icon; font-size:24px; align-self:center; }
 .trow .name { grid-area:name; font-size:17px; line-height:1.35; min-height:2.7em; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 .trow .tsub { grid-area:sub; font-size:13px; margin-top:0; }
 .trow .tsum { grid-area:sum; padding:8px 12px; }
 .trow .pct { grid-area:pct; font-size:15px; }
+.trow .tmeter { grid-area:meter; display:flex; align-items:center; gap:10px; direction:rtl; margin-top:6px; }
+.trow .tmeter .bar { flex:1; height:10px; direction:rtl; }
+.trow .tmeter .bar > div { background:linear-gradient(270deg,#159564,#0b5d3b); }
+.trow .tmeter .cnt { flex:0 0 auto; white-space:nowrap; font-size:14px; font-weight:600; color:#456; }
 
 /* long question titles: own full-width row in the navbar instead of a squeezed column (Avi 23/10) */
 .navbar { flex-wrap:wrap; row-gap:8px; }
@@ -161,3 +181,55 @@ button.bar-row:focus-visible { outline:3px solid #398cbd; outline-offset:2px; }
 .codeinput { width:100%; box-sizing:border-box; font-size:26px; letter-spacing:10px; text-align:center; padding:14px 12px; border:2px solid #0b5d3b; border-radius:12px; margin:10px 0; direction:ltr; font-family:inherit; }
 .warnbox { background:#fdeceb; border:2px solid #d45d4f; border-radius:14px; padding:14px 16px; font-size:16px; line-height:1.6; color:#7a2c20; margin:12px 0; }
 .secondary.disabled { border-color:#9fb3aa; color:#9fb3aa; cursor:default; }
+
+/* main-topic cards: correct/wrong counts + completion bar (Avi 3/11) */
+.grow { display:grid; grid-template-columns:auto 1fr auto auto; grid-template-areas:"icon name pct chev" "meter meter meter meter"; align-items:center; column-gap:12px; row-gap:6px; }
+.grow .em { grid-area:icon; }
+.grow .name { grid-area:name; }
+.grow .pct { grid-area:pct; }
+.grow .chev { grid-area:chev; }
+.grow .tmeter { grid-area:meter; display:flex; align-items:center; gap:10px; direction:rtl; margin-top:4px; }
+.grow .tmeter .bar { flex:1; height:10px; direction:rtl; }
+.grow .tmeter .bar > div { background:linear-gradient(270deg,#159564,#0b5d3b); }
+.grow .tmeter .cnt { flex:0 0 auto; white-space:nowrap; font-size:14px; font-weight:600; color:#456; }
+.atab .aq { color:#0b5d3b; font-weight:800; font-size:15px; }
+/* Compact auction grid: compass order left-to-right, one round per row. */
+.atab { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.atab .ah { font-size:15px; padding:8px 2px; line-height:20px; }
+.atab .ah small { display:block; font-size:11px; line-height:14px; color:#0b5d3b; }
+.atab .ah:not(:nth-child(4)), .atab .ac:not(:nth-child(4n)) { border-right:1px solid #e0e8e4; }
+.atab .ac { display:flex; align-items:center; justify-content:center; padding:7px 2px; min-height:25px; font-size:20px; line-height:25px; }
+.atab .aq { font-size:23px; }
+
+/* Role-only auctions share the compact table style, without invented seats. */
+.atab.role-table .ah, .atab.role-table .ac { border-right:1px solid #e0e8e4; }
+.role-order-note { color:#5a6b75; font-size:12px; margin:0 0 5px; }
+.role-sequence { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); border:1px solid #cfd8dc; border-radius:12px; overflow:hidden; background:#fff; }
+.role-step { min-width:0; text-align:center; border-right:1px solid #e0e8e4; border-bottom:1px solid #eef2f5; }
+.role-step.you { background:#f1f8f4; }
+.role-step-label { font-size:14px; font-weight:700; background:#eef2f5; padding:6px 2px; color:#5a6b75; }
+.role-step.you .role-step-label { color:#0b5d3b; background:#f1f8f4; }
+.role-step-label small { display:block; font-size:10px; font-weight:400; line-height:12px; }
+.role-step-bid { display:flex; justify-content:center; align-items:center; font-size:20px; line-height:25px; min-height:39px; font-weight:700; color:#123; }
+.role-step-bid .aq { color:#0b5d3b; font-size:23px; font-weight:800; }
+
+.source-auction { display:grid; grid-template-columns:minmax(45px,1fr) minmax(90px,2fr) minmax(45px,1fr); grid-template-rows:auto 58px auto; gap:10px 8px; padding:14px 10px; border:1px solid #cfd8dc; border-radius:12px; background:#fff; text-align:center; font-size:21px; font-weight:700; color:#123; align-items:center; }
+.source-north { grid-area:1/2; }
+.source-west { grid-area:2/1; }
+.source-table { grid-area:2/2; height:50px; border-radius:8px; background:#dceee3; border:1px solid #b7d9c4; }
+.source-east { grid-area:2/3; }
+.source-south { grid-area:3/2; padding:8px; background:#f1f8f4; border-radius:8px; }
+.source-role { display:block; font-size:14px; line-height:20px; color:#5a6b75; margin-bottom:4px; }
+.source-south .source-role, .source-south .aq { color:#0b5d3b; font-weight:800; }
+.source-bids { white-space:nowrap; }
+.source-slash { color:#8d9e98; font-weight:400; margin:0 3px; }
+
+.auc-wrap { display:block; }
+.dchip { display:inline-block; margin:0 0 8px; padding:3px 10px; border-radius:999px; background:#fff4d6; border:1px solid #f0d58a; color:#6b4e00; font-size:13px; font-weight:600; line-height:20px; }
+.dchip b { font-weight:800; }
+.atab .ah.dlr { background:#fff4d6; }
+.atab .ah .dtag { display:block; font-size:11px; line-height:14px; color:#8a6100; font-weight:800; }
+
+/* Approved direction-header backgrounds, no vulnerability words. */
+.atab .ah.vheader.vulnerable { background:#f4cccc; color:#123 !important; border:0; border-bottom:1px solid #cfd8dc; }
+.atab .ah.vheader.nonvulnerable { background:#bde3c9; color:#123 !important; border:0; border-bottom:1px solid #cfd8dc; }

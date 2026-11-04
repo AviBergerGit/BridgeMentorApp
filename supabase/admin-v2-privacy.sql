@@ -1,4 +1,4 @@
--- Non-admins must not see other users.
+-- Non-admins must not see other users (Avi, 2026-11-02).
 -- Enumeration of users becomes admin-only; per-name reads stay open because
 -- name-only login already lets anyone who knows a name open it.
 

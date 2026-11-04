@@ -12,12 +12,16 @@ export default function TopicsScreen({ c }) {
           {GROUPS.filter(g => g.topics.some(enabled)).map(g => {
             const qs = activeGroupQs(g);
             const done = qs.filter(x => stats.answered[x.id]).length;
+            const ok = qs.filter(x => stats.answered[x.id] && stats.answered[x.id].correct).length;
+            const wrong = done - ok;
+            const p = Math.round(100 * done / qs.length);
             return (
-              <div className="topicrow" key={g.id} onClick={() => { setGrp(g.id); setScreen("group"); }}>
+              <div className="topicrow grow" key={g.id} onClick={() => { setGrp(g.id); setScreen("group"); }}>
                 <span className="em">{g.icon}</span>
                 <span className="name">{g.name}<small className="tsub">{g.topics.filter(enabled).length} נושאים · {qs.length} שאלות</small></span>
-                <span className="pct">{Math.round(100 * done / qs.length)}%</span>
+                <span className="pct">{p}%</span>
                 <span className="chev">‹</span>
+                <div className="tmeter"><div className="bar"><div style={{width: p + "%"}}></div></div><span className="cnt">{ok} נכון · {wrong} לא נכון</span></div>
               </div>
             );
           })}
