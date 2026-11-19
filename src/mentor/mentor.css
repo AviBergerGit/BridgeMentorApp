@@ -233,3 +233,66 @@ button.bar-row:focus-visible { outline:3px solid #398cbd; outline-offset:2px; }
 /* Approved direction-header backgrounds, no vulnerability words. */
 .atab .ah.vheader.vulnerable { background:#f4cccc; color:#123 !important; border:0; border-bottom:1px solid #cfd8dc; }
 .atab .ah.vheader.nonvulnerable { background:#bde3c9; color:#123 !important; border:0; border-bottom:1px solid #cfd8dc; }
+
+/* Tappable user rows open the practiced-topics view (admin). */
+.userrow { cursor:pointer; }
+.userrow .goin { flex:0 0 auto; font-size:24px; color:#0b5d3b; font-weight:800; }
+
+.atab .ac .acell { display:flex; flex-direction:column; align-items:center; line-height:22px; }
+.atab .ac .an { font-size:10px; font-weight:400; color:#666; line-height:12px; }
+
+/* segmented outcome bar: green correct, red wrong, grey track = unanswered (Avi 2026-11-13) */
+.bar.segs { display:flex; }
+.bar.segs > div { border-radius:0; }
+.bar.segs > div.seg-ok { background:linear-gradient(90deg,#159564,#0b5d3b); }
+.bar.segs > div.seg-bad { background:#c0392b; }
+
+/* Defence-course diagrams: compass positions never follow RTL text direction. */
+.defense-diagram .rank-hand{font-size:24px;font-weight:700;letter-spacing:1px;text-align:center;color:#1c2b33;line-height:1.7;}
+.defense-diagram.compass{direction:ltr;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);grid-template-areas:'north north north' 'west center east' 'south south south';align-items:center;column-gap:4px;row-gap:10px;padding:14px 8px 20px;min-height:260px;}
+/* The side holding a hand gets the free width; the opposite side shrinks to its
+   label/chip, so the table shifts toward it and the hand has real room (Avi 18/11). */
+.defense-diagram.compass.hand-east{grid-template-columns:minmax(0,auto) auto minmax(0,1fr);}
+.defense-diagram.compass.hand-west{grid-template-columns:minmax(0,1fr) auto minmax(0,auto);}
+.defense-diagram .north{grid-area:north;display:flex;flex-direction:column;align-items:center;text-align:center;}
+.defense-diagram .west{grid-area:west;display:flex;flex-direction:row;align-items:center;justify-content:flex-end;gap:8px;min-width:0;}
+.defense-diagram .east{grid-area:east;display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:8px;min-width:0;}
+.defense-diagram .seat-main{display:flex;flex-direction:column;align-items:center;min-width:0;}
+.defense-diagram .center{grid-area:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;}
+/* Side-hand diagrams: nudge the side holding itself a little lower than the table group (Avi 18/11). A transform keeps the table, chips and panel geometry exactly as approved. */
+.defense-diagram.compass.hand-east .east,.defense-diagram.compass.hand-west .west{transform:translateY(22px);}
+/* The table block sits at the bottom of the middle band so it balances the hand below it, not the tall side holding (Avi 18/11). */
+.defense-diagram.compass .center{align-self:end;}
+.defense-diagram .south{grid-area:south;display:flex;flex-direction:column;align-items:center;text-align:center;}
+.defense-diagram .direction{display:block;direction:rtl;font-size:12px;color:#6b7b82;margin-bottom:4px;}
+.defense-diagram.compass .table-square{width:48px;height:48px;border-width:3px;margin:0 auto;flex-shrink:0;}
+/* Played cards sit on their seat's side of the table, level with it (Avi 18/11): a 3x3 grid anchored on the table square keeps North/South chips centered exactly over the table and side chips flanking it, whatever chips are present. */
+.defense-diagram .table-grid{display:grid;grid-template-columns:auto auto auto;justify-items:center;align-items:center;gap:6px;}
+.defense-diagram .table-grid .tg-n{display:flex;flex-direction:column;align-items:center;}
+/* Side-seat hands render at the same card size as the player's hand (Avi 18/11): one line per suit, aligned left inside the hand area, next to the played-card chip. */
+.defense-diagram .east .hand,.defense-diagram .west .hand{margin:0;align-self:flex-start;}
+.defense-diagram .east .hand>div,.defense-diagram .west .hand>div{white-space:nowrap;text-align:left;}
+.defense-diagram.compass .scopenote{grid-column:1/-1;direction:rtl;}
+.defense-diagram .north .hand,.defense-diagram .south .hand{margin-top:8px;}
+/* When a side hand shifts the table, the south block follows it: flush with the
+   table's left edge instead of centered in the full panel (Avi 18/11). */
+.defense-diagram.compass.hand-east .south,.defense-diagram.compass.hand-west .south{grid-column:2/-1;align-items:flex-start;text-align:left;}
+.defense-diagram.compass.hand-east .south .hand,.defense-diagram.compass.hand-west .south .hand{margin:8px 0 0;}
+/* Very narrow phones (<360px): trim non-text spacing so the full-size side hand
+   stays inside the panel - card text size is never reduced (Avi 18/11). */
+@media (max-width:359px){
+ .defense-diagram.compass{column-gap:2px;padding:14px 4px 20px;}
+ .defense-diagram.compass .table-square{width:42px;height:42px;}
+ .defense-diagram .west,.defense-diagram .east{gap:4px;}
+ .defense-diagram .table-grid{grid-template-columns:auto 42px auto;gap:4px 2px;}
+ .defense-diagram .played-chip{padding:1px 2px;}
+}
+
+.def-context{color:#33414a;font-size:17px;font-weight:400;line-height:1.5;}
+.defense-diagram .played{margin:2px 0;flex-shrink:0;}
+/* Played cards on the table use the same card size as the hands (Avi 18/11). */
+.defense-diagram .played-chip{display:inline-block;direction:ltr;border:1.5px solid #b9c6cc;border-radius:6px;background:#fff;padding:2px 5px;font-weight:700;font-size:24px;line-height:1.3;box-shadow:0 1px 2px rgba(0,0,0,.12);}
+.defense-diagram .played-chip .suit{font-size:26px;margin-right:2px;}
+/* A card the question says was played without naming it: dashed, neutral, no rank. */
+.defense-diagram .played-chip.generic{direction:rtl;border-style:dashed;border-color:#93a3ab;background:#eef2f4;color:#51636c;font-weight:600;font-size:13px;font-style:italic;box-shadow:none;}
+.defense-diagram .played-chip.generic .suit{font-style:normal;margin-left:3px;margin-right:0;}

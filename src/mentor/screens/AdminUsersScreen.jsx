@@ -32,16 +32,18 @@ export default function AdminUsersScreen({ c }) {
         <div className="header"><div className="navbar"><span className="back" onClick={() => setScreen("settings")}>→</span><h1>ניהול משתמשים</h1></div></div>
         <div className="content">
           <div className="admin-note">מחיקה מסירה את השם, כל ההתקדמות וההגדרות מהענן - לצמיתות, ללא אפשרות שחזור.</div>
+          <div className="admin-note" style={{background:'#e3f1e4',color:'#2c5d34'}}>לחיצה על משתמש מציגה את הנושאים שתירגל.</div>
           {failed && <div className="banner-bad" style={{fontSize:18}}>לא ניתן לטעון את רשימת המשתמשים - בדקו את החיבור ונסו שוב</div>}
           {failed && <button className="secondary" onClick={load}>נסו שוב</button>}
           {!failed && !rows && <div className="expl" style={{textAlign:'center'}}>טוען…</div>}
           {rows && rows.length === 0 && <div className="expl" style={{textAlign:'center'}}>אין משתמשים בענן עדיין.</div>}
           {rows && rows.map(u => (
-            <div className="userrow" key={u.name}>
+            <div className="userrow" key={u.name} onClick={() => { setAdminTarget(u); setScreen("admin-user-topics"); }}>
               <span className="uname">{u.name}<span className="usub">{u.answered} שאלות נענו · {u.correct} נכון</span></span>
               {u.name === current || u.name === PROTECTED_USER
                 ? <span className="me">מנהל</span>
-                : <button className="del" onClick={() => { setAdminTarget(u); setScreen("admin-confirm"); }}>🗑 מחיקה</button>}
+                : <button className="del" onClick={(e) => { e.stopPropagation(); setAdminTarget(u); setScreen("admin-confirm"); }}>🗑 מחיקה</button>}
+              <span className="goin" aria-hidden="true">‹</span>
             </div>
           ))}
         </div>

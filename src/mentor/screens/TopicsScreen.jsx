@@ -1,5 +1,6 @@
 import React from 'react';
 import { TOPICS, GROUPS, groupedIds } from '../data/index.js';
+import { SegBar } from '../components/SegBar.jsx';
 
 export default function TopicsScreen({ c }) {
   const { stats, enabled, activeQuestions, activeTopics, activeGroupQs, EmptyTopics, setScreen, setGrp, TopicRow, pct, startTopic } = c;
@@ -21,7 +22,7 @@ export default function TopicsScreen({ c }) {
                 <span className="name">{g.name}<small className="tsub">{g.topics.filter(enabled).length} נושאים · {qs.length} שאלות</small></span>
                 <span className="pct">{p}%</span>
                 <span className="chev">‹</span>
-                <div className="tmeter"><div className="bar"><div style={{width: p + "%"}}></div></div><span className="cnt">{ok} נכון · {wrong} לא נכון</span></div>
+                <div className="tmeter"><SegBar ok={ok} bad={wrong} total={qs.length}/><span className="cnt">{ok} נכון · {wrong} לא נכון</span></div>
               </div>
             );
           })}

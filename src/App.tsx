@@ -37,7 +37,7 @@ export function App() {
         if (route.startsWith("?")) route = new URLSearchParams(route).get("route") || "";
         if (!route || route.startsWith("file-preview")) route = new URLSearchParams(w?.location?.search || "").get("route") || "";
     } catch { /* no route */ }
-    if (route.startsWith("q-")) return <div className="bm-host"><div className="bm-strip" aria-hidden="true" /><Mentor stats={EMPTY_USER} users={{}} current={null} setStats={() => {}} recordAnswer={() => {}} selectUser={() => {}} /></div>;
+    if (route.startsWith("q-") || route.startsWith("defq-")) return <div className="bm-host"><div className="bm-strip" aria-hidden="true" /><Mentor stats={EMPTY_USER} users={{}} current={null} setStats={() => {}} recordAnswer={() => {}} selectUser={() => {}} /></div>;
     return <LiveApp />;
 }
 function LiveApp() {

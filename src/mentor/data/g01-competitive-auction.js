@@ -2118,7 +2118,7 @@ export const questions = [
    "d": "A62",
    "c": "QJ72"
   },
-  "hcp": 17,
+  "hcp": 15,
   "auction": [
    ["מערב", "1♦"],
    ["צפון", "1NT"],
@@ -2168,7 +2168,7 @@ export const questions = [
    "d": "A42",
    "c": "AQ872"
   },
-  "hcp": 15,
+  "hcp": 14,
   "auction": [
    ["מערב", "1♥"]
   ],

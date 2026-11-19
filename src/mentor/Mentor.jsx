@@ -3,6 +3,7 @@ import './mentor.css';
 import { shuffle } from './lib/helpers.js';
 import { QUESTIONS, TOPICS, PLAY_TOPICS, topicOf, groupOf, qsOfGroup, qsOf } from './data/index.js';
 import { ErrorBoundary } from './components/ErrorBoundary.jsx';
+import { SegBar } from './components/SegBar.jsx';
 import { ErrorScreen } from './components/ErrorScreen.jsx';
 import TopicSettingsScreen from './screens/TopicSettingsScreen.jsx';
 import SettingsScreen from './screens/SettingsScreen.jsx';
@@ -17,11 +18,15 @@ import PlayersScreen from './screens/PlayersScreen.jsx';
 import AdminCodeScreen from './screens/AdminCodeScreen.jsx';
 import AdminUsersScreen from './screens/AdminUsersScreen.jsx';
 import AdminConfirmScreen from './screens/AdminConfirmScreen.jsx';
+import AdminUserTopicsScreen from './screens/AdminUserTopicsScreen.jsx';
 import HomeScreen from './screens/HomeScreen.jsx';
+import { DefenseHomeScreen, DefenseSummaryScreen, DefenseQuestionScreen, DefenseFeedbackScreen, DefenseDoneScreen } from './screens/DefenseScreens.jsx';
+import { DEFENSE_QUESTIONS } from './data/g13-defense-nt-lead.js';
 
 // Dev/preview deep links shared by the runtime hash handler and static renders
 // (window.instinctFile.initialRoute, used by the file renderer for screenshots).
 function adminRoute(h){
+  if (h.startsWith("defq-")) { const di=DEFENSE_QUESTIONS.findIndex(x=>x.id===h.slice(5)); if(di>=0) return {screen:"def-q",di}; }
   if (h.startsWith("q-")) {
     const qi = QUESTIONS.findIndex(x => x.id === h.slice(2));
     if (qi >= 0) return { screen: "question", qi };
@@ -35,6 +40,15 @@ function adminRoute(h){
   if (h.startsWith("admin-setup-")) return { screen: "admin-code", test: "setup", setupKey: h.slice("admin-setup-".length) };
   if (h === "admin-users") return { screen: "admin-users", testUsers: [{name:"אבי",answered:116,correct:97},{name:"דוד",answered:54,correct:38},{name:"שרה",answered:23,correct:15},{name:"משה",answered:8,correct:3}] };
   if (h === "admin-confirm") return { screen: "admin-confirm", testUsers: [], target: {name:"דוד",answered:54,correct:38} };
+  if (h === "admin-user-topics") {
+    // Demo detail: practiced topics across three main topics, mostly correct.
+    const demo = {};
+    const mark = (tid, n, wrongFirst) => qsOf(tid).slice(0, n).forEach((q, i) => { demo[q.id] = { correct: !(wrongFirst > i) }; });
+    mark("t1", 7, 1); mark("t2", 7, 3); mark("t7", 6, 1); mark("t9", 4, 1);
+    mark("t10", 8, 2); mark("t15", 2, 1);
+    return { screen: "admin-user-topics", target: {name:"דוד",answered:34,correct:25}, testDetail: demo };
+  }
+
   if (h === "settings") return { screen: "settings" };
   if (h === "group-demo") return { screen: "group", grp: "g1" };
   if (h === "topics-demo") return { screen: "topics" };
@@ -71,7 +85,7 @@ export default function Mentor({ stats, setStats, recordAnswer, users, current, 
         <span className="tsub">{qs.length} {qs.length === 1 ? "שאלה" : "שאלות"}</span>
         <button className="tsum" onClick={e => { e.stopPropagation(); setSumTid(t.id); setScreen("summary"); }}>תקציר</button>
         <span className="pct">{Math.round(100 * done / qs.length)}%</span>
-        <div className="tmeter"><div className="bar"><div style={{width: Math.round(100 * done / qs.length) + "%"}}></div></div><span className="cnt">{ok} נכון · {wrong} לא נכון</span></div>
+        <div className="tmeter"><SegBar ok={ok} bad={wrong} total={qs.length}/><span className="cnt">{ok} נכון · {wrong} לא נכון</span></div>
       </div>
     );
   };
@@ -81,6 +95,7 @@ export default function Mentor({ stats, setStats, recordAnswer, users, current, 
   const [adminTestState, setAdminTestState] = useState(initRoute && initRoute.test ? initRoute.test : null);
   const [adminSetupKey, setAdminSetupKey] = useState(initRoute && initRoute.setupKey ? initRoute.setupKey : null);
   const [adminTestUsers, setAdminTestUsers] = useState(initRoute && initRoute.testUsers ? initRoute.testUsers : null);
+  const [adminTestDetail, setAdminTestDetail] = useState(initRoute && initRoute.testDetail ? initRoute.testDetail : null);
   // restore view to the top of the app on every screen change (hosted viewer keeps parent scroll otherwise)
   useEffect(() => {
     const el = document.querySelector(".bm-strip") || document.querySelector(".app");
@@ -98,7 +113,18 @@ export default function Mentor({ stats, setStats, recordAnswer, users, current, 
       if (!h || h.startsWith("file-preview")) h = new URLSearchParams(window.location.search).get("route") || "";
     } catch (e) { h = ""; }
     if (!h) return;
-    if (h === "correct" || h === "wrong"){
+    if (h.startsWith("defq-")){
+      // Deep link to one defense question by id, e.g. #defq-d1q11 (development previews;
+      // mirrors the main bank's q-<id> link). Sets the full ordered round at that position
+      // so navigation onward works; no answers are recorded by opening the link.
+      const i = DEFENSE_QUESTIONS.findIndex(x => x.id === h.slice(5));
+      if (i >= 0){ setDefTid(null); setDefOrder(DEFENSE_QUESTIONS.map((_, j) => j)); setDefPos(i); setDefSel(null); setDefFb(null); setScreen("def-q"); }
+    } else if (h === "def-fb" || h === "def-fb-wrong"){
+      const dq = DEFENSE_QUESTIONS[0];
+      setDefOrder(DEFENSE_QUESTIONS.map((_, i) => i)); setDefPos(0);
+      setDefFb({ sel: h === "def-fb" ? dq.answer : dq.wrong[0], ok: h === "def-fb" });
+      setScreen("def-fb");
+    } else if (h === "correct" || h === "wrong"){
       setOrder(QUESTIONS.map((_, i) => i)); setPos(0);
       setFb({ bid: h === "correct" ? QUESTIONS[0].answer : "Pass", ok: h === "correct" });
       setScreen("feedback");
@@ -113,18 +139,52 @@ export default function Mentor({ stats, setStats, recordAnswer, users, current, 
     } else if (h.startsWith("admin")){
       // Demo / deep links for development previews of the admin screens.
       const r = adminRoute(h);
-      if (r){ setAdminTestState(r.test || null); if (r.setupKey) setAdminSetupKey(r.setupKey); if (r.testUsers) setAdminTestUsers(r.testUsers); if (r.target) setAdminTarget(r.target); setScreen(r.screen); }
-    } else if (["topics","question","summary","stats","settings","topic-settings","done","error","home"].includes(h)){
+      if (r){ setAdminTestState(r.test || null); if (r.setupKey) setAdminSetupKey(r.setupKey); if (r.testUsers) setAdminTestUsers(r.testUsers); if (r.target) setAdminTarget(r.target); if (r.testDetail) setAdminTestDetail(r.testDetail); setScreen(r.screen); }
+    } else if (["defense","def-sum","def-q","def-done","topics","question","summary","stats","settings","topic-settings","done","error","home"].includes(h)){
       if (h === "question"){ setOrder(QUESTIONS.map((_, i) => i)); setPos(0); setSelected(null); }
       setScreen(h);
     }
   }, []);
 
+  // Branch "תירגול הגנה": own question pool, never mixed into QUESTIONS (existing practice and stats unchanged).
+  const [defOrder, setDefOrder] = useState(() => DEFENSE_QUESTIONS.map((_, i) => i));
+  const [defPos, setDefPos] = useState(initRoute && initRoute.di !== undefined ? initRoute.di : 0);
+  const [defSel, setDefSel] = useState(null);
+  const [defFb, setDefFb] = useState(null);
+  const [defTid, setDefTid] = useState(null);
+  const defOptions = useMemo(() => { const dq = DEFENSE_QUESTIONS[defOrder[defPos]]; return dq ? shuffle([dq.answer, ...dq.wrong]) : []; }, [defPos, defOrder]);
+  function startDefense(tid){
+    const pool = DEFENSE_QUESTIONS.map((x, i) => (tid && x.topic !== tid) ? -1 : i).filter(i => i >= 0);
+    const fresh = [], wrongFirst = [], rest = [];
+    pool.forEach(i => { const a = stats.answered[DEFENSE_QUESTIONS[i].id]; if (!a) fresh.push(i); else if (a.correct) rest.push(i); else wrongFirst.push(i); });
+    const order = [...shuffle(fresh), ...shuffle(wrongFirst), ...shuffle(rest)].slice(0, 10);
+    if (!order.length){ setDefTid(tid || null); setScreen("def-sum"); return; }
+    setDefTid(tid || null);
+    setDefOrder(order);
+    setDefPos(0); setDefSel(null); setDefFb(null); setScreen("def-q");
+  }
+  function checkDefense(){
+    if (!defSel) return;
+    const dq = DEFENSE_QUESTIONS[defOrder[defPos]];
+    const ok = defSel === dq.answer;
+    setDefFb({ sel: defSel, ok });
+    if (recordAnswer) { recordAnswer(dq.id, ok); } else {
+      setStats({ ...stats, totalAnswers: stats.totalAnswers + 1, totalCorrect: stats.totalCorrect + (ok ? 1 : 0), answered: { ...stats.answered, [dq.id]: { correct: ok } } });
+    }
+    setScreen("def-fb");
+  }
+  function nextDefense(){
+    if (defPos + 1 >= defOrder.length){ setScreen("def-done"); return; }
+    setDefPos(defPos + 1); setDefSel(null); setDefFb(null); setScreen("def-q");
+  }
+
   const q = QUESTIONS[order[pos]];
   const options = useMemo(() => q ? shuffle([q.answer, ...q.wrong]) : [], [q && q.id, pos, order]);
   const isPlay = !!(q && PLAY_TOPICS[q.topic]);
-  const uniqueAnswered = Object.keys(stats.answered).length;
-  const pct = uniqueAnswered ? Math.round(100 * (stats.answered && Object.values(stats.answered).filter(a => a.correct).length) / QUESTIONS.length) : 0;
+  const bankIds = new Set(QUESTIONS.map(x => x.id));
+  const bankAnswered = Object.entries(stats.answered).filter(([id]) => bankIds.has(id)).map(([, v]) => v);
+  const uniqueAnswered = bankAnswered.length;
+  const pct = uniqueAnswered ? Math.round(100 * bankAnswered.filter(a => a.correct).length / QUESTIONS.length) : 0;
 
   function startTopic(id){
     const t = id === undefined ? tid : id;
@@ -156,13 +216,19 @@ export default function Mentor({ stats, setStats, recordAnswer, users, current, 
     setPos(pos + 1); setSelected(null); setFb(null); setScreen("question");
   }
 
-  const ctx = { stats, setStats, sync, storageStatus, users, current, selectUser, disabledTopics, setDisabledTopics, preferenceMessage, adminToken, setAdminToken, adminTarget, setAdminTarget, adminTestState, adminSetupKey, adminTestUsers, deletedNotice, clearDeletedNotice, enabled, activeQuestions, activeTopics, activeGroupQs, setEnabled, expanded, setExpanded, EmptyTopics, nameInput, setNameInput, screen, setScreen, order, setOrder, pos, setPos, selected, setSelected, fb, setFb, tid, setTid, grp, setGrp, backList, TopicRow, sumTid, setSumTid, curName, q, options, isPlay, uniqueAnswered, pct, startTopic, check, next };
+  const ctx = { defOrder, defPos, defSel, setDefSel, defFb, defOptions, startDefense, checkDefense, nextDefense, defTid, setDefTid, stats, setStats, sync, storageStatus, users, current, selectUser, disabledTopics, setDisabledTopics, preferenceMessage, adminToken, setAdminToken, adminTarget, setAdminTarget, adminTestState, adminSetupKey, adminTestUsers, adminTestDetail, deletedNotice, clearDeletedNotice, enabled, activeQuestions, activeTopics, activeGroupQs, setEnabled, expanded, setExpanded, EmptyTopics, nameInput, setNameInput, screen, setScreen, order, setOrder, pos, setPos, selected, setSelected, fb, setFb, tid, setTid, grp, setGrp, backList, TopicRow, sumTid, setSumTid, curName, q, options, isPlay, uniqueAnswered, pct, startTopic, check, next };
 
   return (
     <ErrorBoundary onHome={() => setScreen("topics")}>
       <div className="app" dir="rtl">
 
         {screen === "home" && <HomeScreen c={ctx}/>}
+
+        {screen === "defense" && <DefenseHomeScreen c={ctx}/>}
+        {screen === "def-sum" && <DefenseSummaryScreen c={ctx}/>}
+        {screen === "def-q" && <DefenseQuestionScreen c={ctx}/>}
+        {screen === "def-fb" && defFb && <DefenseFeedbackScreen c={ctx}/>}
+        {screen === "def-done" && <DefenseDoneScreen c={ctx}/>}
 
         {screen === "players" && <PlayersScreen c={ctx}/>}
 
@@ -189,6 +255,8 @@ export default function Mentor({ stats, setStats, recordAnswer, users, current, 
         {screen === "admin-users" && <AdminUsersScreen c={ctx}/>}
 
         {screen === "admin-confirm" && <AdminConfirmScreen c={ctx}/>}
+
+        {screen === "admin-user-topics" && adminTarget && <AdminUserTopicsScreen c={ctx}/>}
 
         {screen === "error" && (
           <ErrorScreen onRetry={() => setScreen("question")} onHome={() => setScreen("topics")}/>

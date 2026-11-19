@@ -1,6 +1,7 @@
 import React from 'react';
 import { TOPICS, GROUPS, topicOf, groupedIds, qsOfGroup, qsOf } from '../data/index.js';
 import { SummaryCards } from '../components/SummaryCards.jsx';
+import { SegBar } from '../components/SegBar.jsx';
 
 export default function StatsScreen({ c }) {
   const { stats, users, current, enabled, activeQuestions, setScreen, EmptyTopics } = c;
@@ -25,7 +26,7 @@ export default function StatsScreen({ c }) {
               return (
                 <div className={"bar-row" + (main ? " main" : "")} key={key}>
                   <div className="ttl"><span className="ico">{t.icon}</span><span className="tn">{t.name}</span></div>
-                  <div className="meter"><div className="bar"><div style={{width: Math.round(100 * done / qs.length) + "%"}}></div></div><span className="cnt">{qs.length} שאלות · {ok} נכון · {wrong} לא נכון</span></div>
+                  <div className="meter"><SegBar ok={ok} bad={wrong} total={qs.length}/><span className="cnt">{qs.length} שאלות · {ok} נכון · {wrong} לא נכון</span></div>
                 </div>
               );
             };
@@ -38,7 +39,7 @@ export default function StatsScreen({ c }) {
               <div key={blk.g.id}>
                 <button type="button" className="bar-row grow main" aria-expanded={!!open[blk.g.id]} aria-controls={"stat-children-" + blk.g.id} aria-label={(open[blk.g.id] ? "הסתר פירוט: " : "הצג פירוט: ") + blk.g.name} onClick={() => setOpen({...open, [blk.g.id]: !open[blk.g.id]})}>
                   <div className="ttl"><span className="ico">{blk.g.icon}</span><span className="tn">{blk.g.name}</span><span className="chev" aria-hidden="true">{open[blk.g.id] ? "⌃" : "⌄"}</span></div>
-                  <div className="meter"><div className="bar"><div style={{width: Math.round(100 * gd / gq.length) + "%"}}></div></div><span className="cnt">{gq.length} שאלות · {gk} נכון · {gw} לא נכון</span></div>
+                  <div className="meter"><SegBar ok={gk} bad={gw} total={gq.length}/><span className="cnt">{gq.length} שאלות · {gk} נכון · {gw} לא נכון</span></div>
                 </button>
                 {open[blk.g.id] && <div className="stat-children" id={"stat-children-" + blk.g.id}>{blk.list.map(t => row(t, t.id, false))}</div>}
               </div>

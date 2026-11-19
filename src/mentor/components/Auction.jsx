@@ -45,14 +45,24 @@ function SeatTable({ calls, you, dealer, vul }) {
   if (yi <= prev) { grid.push(cur); cur = [null, null, null, null]; }
   cur[yi] = "?";
   grid.push(cur);
+  // A seat with no chip between the first call and your upcoming turn had a real
+  // turn and passed: show P (Avi, 2026-11-13). Cells before the first call or
+  // after the "?" are outside the auction and stay empty.
+  const flat = grid.flat();
+  const first = flat.findIndex(c => c);
+  const last = flat.length - 1 - [...flat].reverse().findIndex(c => c);
   return (
     <div className="atab" dir="ltr">
       {SEAT_ORDER.map(s => <div key={s} className={"ah" + (s === you ? " you" : "") + (s === dealer ? " dlr" : "") + (vulnerabilityFor(vul, s, you ? (s === you || s === OPPOSITE[you] ? "אתה" : "יריב") : null) === null ? "" : " vheader " + (vulnerabilityFor(vul, s, you ? (s === you || s === OPPOSITE[you] ? "אתה" : "יריב") : null) ? "vulnerable" : "nonvulnerable"))} dir="rtl">{s}</div>)}
-      {grid.map((r, ri) => r.map((cell, ci) => (
+      {grid.map((r, ri) => r.map((cell, ci) => {
+        const fi = ri * 4 + ci;
+        const inferred = !cell && fi > first && fi < last;
+        return (
         <div key={ri + "-" + ci} className={"ac" + (SEAT_ORDER[ci] === you ? " you" : "")}>
-          {cell === "?" ? <span className="aq" aria-label="תורך">?</span> : cell ? <Bid b={cell}/> : ""}
+          {cell === "?" ? <span className="aq" aria-label="תורך">?</span> : cell ? <Bid b={cell}/> : inferred ? <Bid b="P"/> : ""}
         </div>
-      )))}
+        );
+      }))}
     </div>
   );
 }
